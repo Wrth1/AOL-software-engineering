@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   runApp(const NotepadApp());
 }
@@ -32,6 +32,12 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   int editingIndex = -1;
 
   final TextEditingController _noteController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotes();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,18 +98,31 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
       if (editingIndex != -1) {
         // Update existing note
         notes[editingIndex] = _noteController.text;
-        // popup('Note at index $editingIndex has been updated.');
         editingIndex = -1;
         _noteController.clear();
       } else {
         // Add new note
         notes.add(_noteController.text);
         final newIndex = notes.length - 1;
-        // popup('Note at index $newIndex has been added.');
         editingIndex = newIndex;
       }
-      // _noteController.clear();
+      _saveNotes();
     });
+  }
+
+  void _saveNotes() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('notes', notes);
+  }
+
+  void _loadNotes() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedNotes = prefs.getStringList('notes');
+    if (savedNotes != null) {
+      setState(() {
+        notes = savedNotes;
+      });
+    }
   }
 
   void popup(String text) {
@@ -196,6 +215,12 @@ class _NotesListPageState extends State<NotesListPage> {
     setState(() {
       // Remove the note at the specified index from the notes list
       widget.notes.removeAt(index);
+      _saveNotes();
     });
+  }
+
+  void _saveNotes() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('notes', widget.notes);
   }
 }
