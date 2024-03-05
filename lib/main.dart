@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 void main() {
   runApp(const NotepadApp());
 }
@@ -49,7 +50,6 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           IconButton(
             icon: const Icon(Icons.folder_open),
             onPressed: () async {
-              // go to the notes list page
               editingIndex = await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -57,11 +57,14 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                     ),
                   ) ??
                   -1;
-              if (editingIndex != -1) {
-                _noteController.text = notes[editingIndex];
-              } else {
-                _noteController.clear();
-              }
+              setState(() {
+                // go to the notes list page
+                if (editingIndex != -1) {
+                  _noteController.text = notes[editingIndex];
+                } else {
+                  _noteController.clear();
+                }
+              });
             },
           ),
         ],
@@ -98,8 +101,8 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
       if (editingIndex != -1) {
         // Update existing note
         notes[editingIndex] = _noteController.text;
-        editingIndex = -1;
-        _noteController.clear();
+        // editingIndex = -1;
+        // _noteController.clear();
       } else {
         // Add new note
         notes.add(_noteController.text);
@@ -163,23 +166,35 @@ class _NotesListPageState extends State<NotesListPage> {
         title: const Text('Notes List'),
         backgroundColor: const Color.fromARGB(255, 227, 179, 235),
       ),
-      body: ListView.builder(
-        itemCount: widget.notes.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(widget.notes[index]),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                // Handle delete button press
-                _deleteNoteAtIndex(context, index);
+      body: Column(
+        children: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context, -1);
+            },
+            child: const Text('New Note'),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.notes.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(widget.notes[index]),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () {
+                      // Handle delete button press
+                      _deleteNoteAtIndex(context, index);
+                    },
+                  ),
+                  onTap: () {
+                    Navigator.pop(context, index);
+                  },
+                );
               },
             ),
-            onTap: () {
-              Navigator.pop(context, index);
-            },
-          );
-        },
+          ),
+        ],
       ),
     );
   }
