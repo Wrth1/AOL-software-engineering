@@ -57,8 +57,10 @@ class _LoginPageState extends State<LoginPage> {
                   _loggedInEmail = user?.email ?? '';
                 });
               } on Exception catch (e) {
-                _isLoggedIn = true;
-                _loggedInEmail = 'Error: ${e.toString()}';
+                setState(() {
+                  _isLoggedIn = true;
+                  _loggedInEmail = 'Error: ${e.toString()}';
+                });
               }
             },
             child: const Text('Login'),
