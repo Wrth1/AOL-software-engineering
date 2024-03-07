@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotesListPage extends StatefulWidget {
-  final List<String> notes;
+  final Map<int, String> notes;
 
   const NotesListPage({super.key, required this.notes});
 
@@ -11,6 +13,9 @@ class NotesListPage extends StatefulWidget {
 }
 
 class _NotesListPageState extends State<NotesListPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,17 +35,19 @@ class _NotesListPageState extends State<NotesListPage> {
             child: ListView.builder(
               itemCount: widget.notes.length,
               itemBuilder: (context, index) {
+                final noteKey = widget.notes.keys.elementAt(index);
+                final noteValue = widget.notes.values.elementAt(index);
                 return ListTile(
-                  title: Text(widget.notes[index]),
+                  title: Text(noteValue),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete),
                     onPressed: () {
                       // Handle delete button press
-                      _deleteNoteAtIndex(context, index);
+                      _deleteNoteAtIndex(context, noteKey);
                     },
                   ),
                   onTap: () {
-                    Navigator.pop(context, index);
+                    Navigator.pop(context, noteKey);
                   },
                 );
               },
@@ -79,15 +86,27 @@ class _NotesListPageState extends State<NotesListPage> {
   }
 
   void _removeNoteAtIndex(int index) {
-    setState(() {
-      // Remove the note at the specified index from the notes list
-      widget.notes.removeAt(index);
-      _saveNotes();
-    });
+    if (_auth.currentUser == null) {
+      setState(() {
+        widget.notes.remove(index);
+        _saveNotes();
+      });
+    } else {
+      final docRef = db.collection("notes").doc(_auth.currentUser?.uid);
+      docRef.update({
+        'notes.$index': FieldValue.delete(),
+      }).then((value) {
+        setState(() {
+          widget.notes.remove(index);
+        });
+      });
+    }
   }
 
   void _saveNotes() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('notes', widget.notes);
+    await prefs.setStringList(
+        'idx', widget.notes.keys.map((el) => el.toString()).toList());
+    await prefs.setStringList('notes', widget.notes.values.toList());
   }
 }

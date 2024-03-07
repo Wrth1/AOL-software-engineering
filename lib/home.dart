@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,17 +15,24 @@ class NotepadHomePage extends StatefulWidget {
 }
 
 class _NotepadHomePageState extends State<NotepadHomePage> {
-  List<String> notes = [];
+  Map<int, String> notes = {};
   int editingIndex = -1;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _noteController = TextEditingController();
-  FirebaseFirestore db = FirebaseFirestore.instance;
+  final FirebaseFirestore db = FirebaseFirestore.instance;
   dynamic data;
+  late DocumentReference notesDocRef;
 
   @override
   void initState() {
     super.initState();
-    _loadNotes();
+    _auth.authStateChanges().listen((User? user) {
+      if (user == null) {
+        _loadNotes();
+      } else {
+        getLoginData();
+      }
+    });
   }
 
   @override
@@ -46,7 +55,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
               setState(() {
                 // go to the notes list page
                 if (editingIndex != -1) {
-                  _noteController.text = notes[editingIndex];
+                  _noteController.text = notes[editingIndex]!;
                 } else {
                   _noteController.clear();
                 }
@@ -64,36 +73,18 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                     builder: (context) => const LoginPage(),
                   ),
                 );
-                final currentUser = _auth.currentUser;
-                if (currentUser != null) {
-                  final docRef =
-                      db.collection("users").doc(_auth.currentUser?.uid);
-                  docRef.get().then(
-                    (DocumentSnapshot doc) {
-                      data = doc.data() as Map<String, dynamic>;
-                      setState(() {
-                        editingIndex = -1;
-                        _loadNotes();
-                      });
-                    },
-                    onError: (e) => print("Error getting document: $e"),
-                  );
-                }
               } else {
                 await _auth.signOut();
-                setState(() {
-                  editingIndex = -1;
-                  _loadNotes();
-                });
+                data = null;
+                editingIndex = -1;
               }
             },
           ),
-          if (_auth.currentUser != null &&
-              data != null) // Check if the username is not empty
+          if (_auth.currentUser != null) // Check if the username is not empty
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                data['username'],
+                getUsername(),
                 style: const TextStyle(fontSize: 16),
               ),
             ),
@@ -126,35 +117,124 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     );
   }
 
+  String getUsername() {
+    if (data != null) {
+      return data['username'];
+    } else {
+      getLoginData();
+      return 'loading...';
+    }
+  }
+
+  void getLoginData() {
+    final currentUser = _auth.currentUser;
+    if (currentUser != null) {
+      setState(() {});
+      final docRef = db.collection("users").doc(currentUser.uid);
+      docRef.get().then(
+        (DocumentSnapshot doc) {
+          notesDocRef = db.collection("notes").doc(_auth.currentUser?.uid);
+          notesDocRef.snapshots().listen((event) {
+            _loadNotes();
+          });
+          data = doc.data() as Map<String, dynamic>;
+          editingIndex = -1;
+          _loadNotes();
+        },
+        onError: (e) => print("Error getting document: $e"),
+      );
+    }
+  }
+
   void _addNote() {
-    setState(() {
+    if (_auth.currentUser == null) {
+      setState(() {
+        if (editingIndex != -1) {
+          // Update existing note
+          notes[editingIndex] = _noteController.text;
+        } else {
+          // Add new note
+          final int newIndex;
+          if (notes.isEmpty) {
+            newIndex = 0;
+          } else {
+            newIndex = notes.keys.reduce(max) + 1;
+          }
+          // notes.add(_noteController.text);
+          notes[newIndex] = _noteController.text;
+          editingIndex = newIndex;
+        }
+        _saveNotes();
+      });
+    } else {
       if (editingIndex != -1) {
-        // Update existing note
         notes[editingIndex] = _noteController.text;
-        // editingIndex = -1;
-        // _noteController.clear();
+        notesDocRef.update({
+          'notes.$editingIndex': _noteController.text,
+        }).then(
+          (value) {
+            setState(() {});
+          },
+          onError: (e) => popup("Error saving note: $e"),
+        );
       } else {
-        // Add new note
-        notes.add(_noteController.text);
-        final newIndex = notes.length - 1;
+        final int newIndex;
+        if (notes.isEmpty) {
+          newIndex = 0;
+        } else {
+          newIndex = notes.keys.reduce(max) + 1;
+        }
+        // notes.add(_noteController.text);
+        notes[newIndex] = _noteController.text;
         editingIndex = newIndex;
+        notesDocRef.update({
+          'notes.$editingIndex': _noteController.text,
+        }).then(
+          (value) {
+            setState(() {});
+          },
+          onError: (e) => popup("Error saving note: $e"),
+        );
       }
-      _saveNotes();
-    });
+    }
   }
 
   void _saveNotes() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('notes', notes);
+    await prefs.setStringList(
+        'idx', notes.keys.map((el) => el.toString()).toList());
+    await prefs.setStringList('notes', notes.values.toList());
   }
 
   void _loadNotes() async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedNotes = prefs.getStringList('notes');
-    if (savedNotes != null) {
-      setState(() {
-        notes = savedNotes;
-      });
+    if (_auth.currentUser == null) {
+      final prefs = await SharedPreferences.getInstance();
+      final idx = prefs.getStringList('idx');
+      final savedNotes = prefs.getStringList('notes');
+      if (savedNotes != null && idx != null) {
+        notes.clear();
+        for (var i = 0; i < idx.length; i++) {
+          notes[int.parse(idx[i])] = savedNotes[i];
+        }
+        setState(() {});
+      }
+    } else {
+      notes = {};
+      notesDocRef.get().then(
+        (DocumentSnapshot doc) {
+          dynamic savedNotes = doc.data() as Map<String, dynamic>;
+          if (savedNotes != null) {
+            final idx = savedNotes['notes'].keys.toList().cast<String>();
+            final savedNotesStrings =
+                savedNotes['notes'].values.toList().cast<String>();
+            for (var i = 0; i < idx.length; i++) {
+              notes[int.parse(idx[i])] = savedNotesStrings[i];
+            }
+            setState(() {});
+          }
+        },
+        onError: (e) => print("Error getting notes: $e"),
+      );
     }
   }
 

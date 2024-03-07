@@ -47,13 +47,13 @@ class _LoginPageState extends State<LoginPage> {
           ElevatedButton(
             onPressed: () async {
               try {
-                final UserCredential userCredential =
-                    await _auth.signInWithEmailAndPassword(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                );
-                final User? user = userCredential.user;
-                if (_isLoggedIn == false) {
+                if (_auth.currentUser == null) {
+                  final UserCredential userCredential =
+                      await _auth.signInWithEmailAndPassword(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                  );
+                  final User? user = userCredential.user;
                   setState(() {
                     _isLoggedIn = true;
                     _loggedInEmail = user?.email ?? '';
