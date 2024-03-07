@@ -21,7 +21,8 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   final TextEditingController _noteController = TextEditingController();
   final FirebaseFirestore db = FirebaseFirestore.instance;
   dynamic data;
-  late DocumentReference notesDocRef;
+  dynamic notesDocRef;
+  dynamic notesListener;
 
   @override
   void initState() {
@@ -74,6 +75,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                   ),
                 );
               } else {
+                notesListener?.cancel();
                 await _auth.signOut();
                 data = null;
                 editingIndex = -1;
@@ -134,9 +136,15 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
       docRef.get().then(
         (DocumentSnapshot doc) {
           notesDocRef = db.collection("notes").doc(_auth.currentUser?.uid);
-          notesDocRef.snapshots().listen((event) {
-            _loadNotes();
-          });
+          notesListener = notesDocRef.snapshots().listen(
+            (event) {
+              _loadNotes();
+            },
+            onError: (error) {
+              print("Listen failed: $error");
+              _loadNotes();
+            },
+          );
           data = doc.data() as Map<String, dynamic>;
           editingIndex = -1;
           _loadNotes();
@@ -207,17 +215,17 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   }
 
   void _loadNotes() async {
-    if (_auth.currentUser == null) {
+    if (notesDocRef == null) {
       final prefs = await SharedPreferences.getInstance();
       final idx = prefs.getStringList('idx');
       final savedNotes = prefs.getStringList('notes');
+      notes.clear();
       if (savedNotes != null && idx != null) {
-        notes.clear();
         for (var i = 0; i < idx.length; i++) {
           notes[int.parse(idx[i])] = savedNotes[i];
         }
-        setState(() {});
       }
+      setState(() {});
     } else {
       notes = {};
       notesDocRef.get().then(
