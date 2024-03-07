@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
@@ -13,7 +14,7 @@ class NotepadHomePage extends StatefulWidget {
 class _NotepadHomePageState extends State<NotepadHomePage> {
   List<String> notes = [];
   int editingIndex = -1;
-
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _noteController = TextEditingController();
 
   @override
@@ -50,17 +51,37 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.login),
-            onPressed: () {
-              // Navigate to the login page
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
-                ),
-              );
+            icon: Icon(_auth.currentUser == null ? Icons.login : Icons.logout),
+            onPressed: () async {
+              if (_auth.currentUser == null) {
+                // Navigate to the login page
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+                setState(() {
+                  if (_auth.currentUser != null) {
+                    editingIndex = -1;
+                  }
+                });
+              } else {
+                await _auth.signOut();
+                setState(() {
+                  editingIndex = -1;
+                });
+              }
             },
           ),
+          if (_auth.currentUser != null) // Check if the username is not empty
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                _auth.currentUser?.uid ?? '',
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
         ],
       ),
       body: Column(

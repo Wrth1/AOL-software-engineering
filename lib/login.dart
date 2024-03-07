@@ -13,6 +13,7 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoggedIn = false;
+  bool _isError = false;
   String _loggedInEmail = '';
 
   @override
@@ -55,10 +56,11 @@ class _LoginPageState extends State<LoginPage> {
                 setState(() {
                   _isLoggedIn = true;
                   _loggedInEmail = user?.email ?? '';
+                  Navigator.pop(context);
                 });
               } on Exception catch (e) {
                 setState(() {
-                  _isLoggedIn = true;
+                  _isError = true;
                   _loggedInEmail = 'Error: ${e.toString()}';
                 });
               }
@@ -67,8 +69,10 @@ class _LoginPageState extends State<LoginPage> {
           ),
           if (_isLoggedIn)
             Text('Logged in as $_loggedInEmail')
+          else if (_isError)
+            Text(_loggedInEmail)
           else
-            const Text('Not logged in'),
+            const Text('Not logged in')
         ],
       ),
     );
