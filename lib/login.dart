@@ -53,11 +53,13 @@ class _LoginPageState extends State<LoginPage> {
                   password: _passwordController.text,
                 );
                 final User? user = userCredential.user;
-                setState(() {
-                  _isLoggedIn = true;
-                  _loggedInEmail = user?.email ?? '';
-                  Navigator.pop(context);
-                });
+                if (_isLoggedIn == false) {
+                  setState(() {
+                    _isLoggedIn = true;
+                    _loggedInEmail = user?.email ?? '';
+                    Navigator.pop(context);
+                  });
+                }
               } on Exception catch (e) {
                 setState(() {
                   _isError = true;

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,8 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   int editingIndex = -1;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _noteController = TextEditingController();
+  FirebaseFirestore db = FirebaseFirestore.instance;
+  dynamic data;
 
   @override
   void initState() {
@@ -61,24 +64,36 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                     builder: (context) => const LoginPage(),
                   ),
                 );
-                setState(() {
-                  if (_auth.currentUser != null) {
-                    editingIndex = -1;
-                  }
-                });
+                final currentUser = _auth.currentUser;
+                if (currentUser != null) {
+                  final docRef =
+                      db.collection("users").doc(_auth.currentUser?.uid);
+                  docRef.get().then(
+                    (DocumentSnapshot doc) {
+                      data = doc.data() as Map<String, dynamic>;
+                      setState(() {
+                        editingIndex = -1;
+                        _loadNotes();
+                      });
+                    },
+                    onError: (e) => print("Error getting document: $e"),
+                  );
+                }
               } else {
                 await _auth.signOut();
                 setState(() {
                   editingIndex = -1;
+                  _loadNotes();
                 });
               }
             },
           ),
-          if (_auth.currentUser != null) // Check if the username is not empty
+          if (_auth.currentUser != null &&
+              data != null) // Check if the username is not empty
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                _auth.currentUser?.uid ?? '',
+                data['username'],
                 style: const TextStyle(fontSize: 16),
               ),
             ),
