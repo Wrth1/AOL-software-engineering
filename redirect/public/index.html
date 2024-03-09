@@ -1,0 +1,52 @@
+<body>
+    hello!
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyD8eIPU7CvAeKWWOVMIAOw6dF5NsahcIKw",
+            authDomain: "notease-redirect.firebaseapp.com",
+            projectId: "notease-redirect",
+            storageBucket: "notease-redirect.appspot.com",
+            messagingSenderId: "81893165096",
+            appId: "1:81893165096:web:0a69678cb9bf4dcd95cd1d",
+            measurementId: "G-SWH1Y9RD4G"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
+    <script>
+        function findUrlParameter(parameterName) {
+            let result = null;
+            const searchParams = new URLSearchParams(location.hash);
+            if (searchParams.has(parameterName)) {
+                result = searchParams.get(parameterName);
+            }
+            return result;
+        }
+
+        function redirectToDesktop() {
+            const idToken = findUrlParameter("id_token");
+            const accessToken = findUrlParameter("#access_token");
+            if (!accessToken) {
+                accessToken = findUrlParameter("access_token");
+            }
+            const appLinkScheme = "notease";
+            const appLinkAuthority = "com.example.testnote";
+            const appLinkUrl = `${appLinkScheme}://${appLinkAuthority}/google-auth?id_token=${idToken}&access_token=${accessToken}`;
+            setTimeout(() => {
+                window.location.href = appLinkUrl;
+            }, 100);
+        }
+
+        redirectToDesktop();
+    </script>
+</body>
