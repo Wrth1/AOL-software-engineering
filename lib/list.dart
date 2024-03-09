@@ -5,8 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class NotesListPage extends StatefulWidget {
   final Map<int, String> notes;
+  final int editingIndex;
 
-  const NotesListPage({super.key, required this.notes});
+  const NotesListPage({super.key, required this.notes, required this.editingIndex});
 
   @override
   State<NotesListPage> createState() => _NotesListPageState();

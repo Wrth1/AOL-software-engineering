@@ -20,7 +20,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _noteController = TextEditingController();
   final FirebaseFirestore db = FirebaseFirestore.instance;
-  dynamic data;
+  dynamic userData;
   dynamic notesDocRef;
   dynamic notesListener;
 
@@ -29,10 +29,14 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     super.initState();
     _auth.authStateChanges().listen((User? user) {
       if (user == null) {
-        _loadNotes();
+        notesListener?.cancel();
+        notesDocRef = null;
+        userData = null;
+        editingIndex = -1;
       } else {
         getLoginData();
       }
+      _loadNotes();
     });
   }
 
@@ -40,27 +44,13 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notease'),
+        title: const Text('Notease - v0.1'),
         backgroundColor: const Color.fromARGB(255, 227, 179, 235),
         actions: [
           IconButton(
             icon: const Icon(Icons.folder_open),
             onPressed: () async {
-              editingIndex = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => NotesListPage(notes: notes),
-                    ),
-                  ) ??
-                  -1;
-              setState(() {
-                // go to the notes list page
-                if (editingIndex != -1) {
-                  _noteController.text = notes[editingIndex]!;
-                } else {
-                  _noteController.clear();
-                }
-              });
+              await selectNotesFromList(context);
             },
           ),
           IconButton(
@@ -75,10 +65,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                   ),
                 );
               } else {
-                notesListener?.cancel();
                 await _auth.signOut();
-                data = null;
-                editingIndex = -1;
               }
             },
           ),
@@ -119,18 +106,35 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     );
   }
 
+  Future<void> selectNotesFromList(BuildContext context) async {
+    int oldEditingIndex = editingIndex;
+    editingIndex = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                NotesListPage(notes: notes, editingIndex: editingIndex),
+          ),
+        ) ??
+        oldEditingIndex;
+    if (editingIndex != -1) {
+      _noteController.text = notes[editingIndex]!;
+    } else if (oldEditingIndex != editingIndex) {
+      _noteController.clear();
+    }
+    setState(() {});
+  }
+
   String getUsername() {
-    if (data != null) {
-      return data['username'];
+    if (userData != null) {
+      return userData['username'];
     } else {
-      getLoginData();
       return 'loading...';
     }
   }
 
   void getLoginData() {
     final currentUser = _auth.currentUser;
-    if (currentUser != null) {
+    if (userData == null && currentUser != null) {
       setState(() {});
       final docRef = db.collection("users").doc(currentUser.uid);
       docRef.get().then(
@@ -142,76 +146,36 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
             },
             onError: (error) {
               print("Listen failed: $error");
-              _loadNotes();
             },
           );
-          data = doc.data() as Map<String, dynamic>;
+          userData = doc.data() as Map<String, dynamic>;
           editingIndex = -1;
-          _loadNotes();
         },
         onError: (e) => print("Error getting document: $e"),
       );
     }
   }
 
-  void _addNote() {
-    if (_auth.currentUser == null) {
-      setState(() {
-        if (editingIndex != -1) {
-          // Update existing note
-          notes[editingIndex] = _noteController.text;
-        } else {
-          // Add new note
-          final int newIndex;
-          if (notes.isEmpty) {
-            newIndex = 0;
-          } else {
-            newIndex = notes.keys.reduce(max) + 1;
-          }
-          // notes.add(_noteController.text);
-          notes[newIndex] = _noteController.text;
-          editingIndex = newIndex;
-        }
-        _saveNotes();
-      });
-    } else {
-      if (editingIndex != -1) {
-        notes[editingIndex] = _noteController.text;
-        notesDocRef.update({
-          'notes.$editingIndex': _noteController.text,
-        }).then(
-          (value) {
-            setState(() {});
-          },
-          onError: (e) => popup("Error saving note: $e"),
-        );
-      } else {
-        final int newIndex;
-        if (notes.isEmpty) {
-          newIndex = 0;
-        } else {
-          newIndex = notes.keys.reduce(max) + 1;
-        }
-        // notes.add(_noteController.text);
-        notes[newIndex] = _noteController.text;
-        editingIndex = newIndex;
-        notesDocRef.update({
-          'notes.$editingIndex': _noteController.text,
-        }).then(
-          (value) {
-            setState(() {});
-          },
-          onError: (e) => popup("Error saving note: $e"),
-        );
-      }
+  void _addNote() async {
+    if (editingIndex == -1) {
+      editingIndex = notes.isEmpty ? 0 : notes.keys.reduce(max) + 1;
     }
-  }
+    notes[editingIndex] = _noteController.text;
 
-  void _saveNotes() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(
-        'idx', notes.keys.map((el) => el.toString()).toList());
-    await prefs.setStringList('notes', notes.values.toList());
+    if (_auth.currentUser == null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(
+          'idx', notes.keys.map((el) => el.toString()).toList());
+      await prefs.setStringList('notes', notes.values.toList());
+    } else {
+      notesDocRef.update({
+        'notes.$editingIndex': _noteController.text,
+      }).then(
+        (value) {},
+        onError: (e) => print("Error saving note: $e"),
+      );
+    }
+    setState(() {});
   }
 
   void _loadNotes() async {
@@ -225,12 +189,11 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           notes[int.parse(idx[i])] = savedNotes[i];
         }
       }
-      setState(() {});
     } else {
-      notes = {};
       notesDocRef.get().then(
         (DocumentSnapshot doc) {
           dynamic savedNotes = doc.data() as Map<String, dynamic>;
+          notes.clear();
           if (savedNotes != null) {
             final idx = savedNotes['notes'].keys.toList().cast<String>();
             final savedNotesStrings =
@@ -238,31 +201,31 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
             for (var i = 0; i < idx.length; i++) {
               notes[int.parse(idx[i])] = savedNotesStrings[i];
             }
-            setState(() {});
           }
         },
         onError: (e) => print("Error getting notes: $e"),
       );
     }
+    setState(() {});
   }
 
-  void popup(String text) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Note Updated'),
-          content: Text(text),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void popup(String text) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text('Note Updated'),
+  //         content: Text(text),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //             child: const Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 }
