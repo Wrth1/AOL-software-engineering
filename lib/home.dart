@@ -28,6 +28,9 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   void initState() {
     super.initState();
     _auth.authStateChanges().listen((User? user) {
+      if (editingIndex != -1) {
+        _noteController.clear();
+      }
       if (user == null) {
         notesListener?.cancel();
         notesDocRef = null;
@@ -179,32 +182,32 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   }
 
   void _loadNotes() async {
+    dynamic idx;
+    dynamic savedNotes;
     if (notesDocRef == null) {
       final prefs = await SharedPreferences.getInstance();
-      final idx = prefs.getStringList('idx');
-      final savedNotes = prefs.getStringList('notes');
-      notes.clear();
-      if (savedNotes != null && idx != null) {
-        for (var i = 0; i < idx.length; i++) {
-          notes[int.parse(idx[i])] = savedNotes[i];
-        }
-      }
+      idx = prefs.getStringList('idx');
+      savedNotes = prefs.getStringList('notes');
     } else {
       notesDocRef.get().then(
         (DocumentSnapshot doc) {
-          dynamic savedNotes = doc.data() as Map<String, dynamic>;
-          notes.clear();
-          if (savedNotes != null) {
-            final idx = savedNotes['notes'].keys.toList().cast<String>();
-            final savedNotesStrings =
-                savedNotes['notes'].values.toList().cast<String>();
+          dynamic savedNotesData = doc.data() as Map<String, dynamic>;
+          if (savedNotesData != null) {
+            idx = savedNotesData['notes'].keys.toList().cast<String>();
+            savedNotes = savedNotesData['notes'].values.toList().cast<String>();
             for (var i = 0; i < idx.length; i++) {
-              notes[int.parse(idx[i])] = savedNotesStrings[i];
+              notes[int.parse(idx[i])] = savedNotes[i];
             }
           }
         },
         onError: (e) => print("Error getting notes: $e"),
       );
+    }
+    notes.clear();
+    if (savedNotes != null && idx != null) {
+      for (var i = 0; i < idx.length; i++) {
+        notes[int.parse(idx[i])] = savedNotes[i];
+      }
     }
     setState(() {});
   }
