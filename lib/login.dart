@@ -172,10 +172,12 @@ class _LoginPageState extends State<LoginPage> {
               try {
                 await signInWithGoogle();
               } on Exception catch (e) {
-                setState(() {
-                  _isError = true;
-                  _loggedInEmail = e.toString();
-                });
+                if (mounted) {
+                  setState(() {
+                    _isError = true;
+                    _loggedInEmail = e.toString();
+                  });
+                }
               }
             },
             child: const Text('Sign in with Google'),

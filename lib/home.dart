@@ -143,6 +143,22 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
       docRef.get().then(
         (DocumentSnapshot doc) {
           notesDocRef = db.collection("notes").doc(_auth.currentUser?.uid);
+          if (doc.exists == false) {
+            docRef.set({
+              'username': currentUser.email,
+            });
+            notesDocRef.set({
+              'notes': {
+                '0':
+                    'Omg Bill ganteng banget dan tidak narsis (test note pertama jangan lupa dihapus pas production)'
+              },
+            });
+            userData = {
+              'username': currentUser.email,
+            };
+          } else {
+            userData = doc.data() as Map<String, dynamic>;
+          }
           notesListener = notesDocRef.snapshots().listen(
             (event) {
               _loadNotes();
@@ -151,7 +167,6 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
               print("Listen failed: $error");
             },
           );
-          userData = doc.data() as Map<String, dynamic>;
           editingIndex = -1;
         },
         onError: (e) => print("Error getting document: $e"),
@@ -191,8 +206,9 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     } else {
       notesDocRef.get().then(
         (DocumentSnapshot doc) {
-          dynamic savedNotesData = doc.data() as Map<String, dynamic>;
+          dynamic savedNotesData = doc.data();
           if (savedNotesData != null) {
+            savedNotesData = savedNotesData as Map<String, dynamic>;
             idx = savedNotesData['notes'].keys.toList().cast<String>();
             savedNotes = savedNotesData['notes'].values.toList().cast<String>();
             for (var i = 0; i < idx.length; i++) {
