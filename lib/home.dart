@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
 import 'package:testnote/login.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NotepadHomePage extends StatefulWidget {
   const NotepadHomePage({super.key});
@@ -47,7 +48,25 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notease - v0.1'),
+        title: GestureDetector(
+          onTap: () {
+            // Open the link when the title is clicked
+            launchUrl(Uri(
+              scheme: 'https',
+              host: 'binusianorg-my.sharepoint.com',
+              path:
+                  '/personal/bill_elim_binus_ac_id/_layouts/15/guestaccess.aspx',
+              queryParameters: {
+                'share': 'EkEQg25whCZKtZOdahpRq5kBQybA6nFJ-an02U60GhuOdg',
+                'e': 'pW9qBv',
+              },
+            ));
+          },
+          child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Text('Notease - v0.2 | 11 Maret 2024'),
+          ),
+        ),
         backgroundColor: const Color.fromARGB(255, 227, 179, 235),
         actions: [
           IconButton(
