@@ -7,17 +7,33 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:967077780131:android:d81e6fba7662c2cfafbd16",
+        "mobilesdk_app_id": "1:967077780131:android:63997ee1c780d156afbd16",
         "android_client_info": {
-          "package_name": "com.example.testnote"
+          "package_name": "com.wrth.notease"
         }
       },
       "oauth_client": [
         {
-          "client_id": "967077780131-km45i3ho23r6pt5693h0h506bq5jqbk3.apps.googleusercontent.com",
+          "client_id": "967077780131-82rhgc8avbjvnir4ebugtto6s0lduen9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.testnote",
+            "package_name": "com.wrth.notease",
+            "certificate_hash": "2d18e17d0ad09cf632936ca195a64001e8077046"
+          }
+        },
+        {
+          "client_id": "967077780131-iibh783rvlp91m3fahf0n9e108akh7f8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrth.notease",
+            "certificate_hash": "1dcd56426b4d8865b8371e9148dd51cd61e62e1f"
+          }
+        },
+        {
+          "client_id": "967077780131-qfbquj2gv2meet13h2thbssq3u0aq273.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wrth.notease",
             "certificate_hash": "3044d864082ae54438901572970cb4904f111c51"
           }
         },
