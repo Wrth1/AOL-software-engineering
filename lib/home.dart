@@ -64,7 +64,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           },
           child: const MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: Text('Notease - v0.2 | 11 Maret 2024'),
+            child: Text('Notease - v0.3 | 16 Maret 2024'),
           ),
         ),
         backgroundColor: const Color.fromARGB(255, 227, 179, 235),

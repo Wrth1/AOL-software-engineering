@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  bool _isError = false;
+  String _loggedInEmail = '';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Register'),
+        backgroundColor: const Color.fromARGB(255, 227, 179, 235),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _passwordController,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+              ),
+              obscureText: true,
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              try {
+                final newUserCredential = await _auth.createUserWithEmailAndPassword(
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                );
+                if (newUserCredential.user != null) {
+                  await newUserCredential.user!.sendEmailVerification();
+                  setState(() {
+                    _loggedInEmail = 'Registration successful! Verification email sent.';
+                  });
+                }
+              } on FirebaseAuthException catch (e) {
+                setState(() {
+                  _isError = true;
+                  _loggedInEmail = 'Error: ${e.message}';
+                });
+              }
+            },
+            child: const Text('Register'),
+          ),
+          if (_isError) Text(_loggedInEmail) else const SizedBox(),
+        ],
+      ),
+    );
+  }
+}

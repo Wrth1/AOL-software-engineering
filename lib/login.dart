@@ -6,7 +6,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:testnote/home.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'register.dart'; // Import the RegisterPage class
 
 class GoogleSignInArgs {
   const GoogleSignInArgs(
@@ -55,10 +58,10 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  // bool _isLoggedIn = false;
   bool _isError = false;
   String _loggedInEmail = '';
   late StreamSubscription<Uri> listener;
+
   @override
   void initState() {
     super.initState();
@@ -72,16 +75,6 @@ class _LoginPageState extends State<LoginPage> {
         final authenticationIdToken = uri.queryParameters['id_token'];
         final authenticationAccessToken = uri.queryParameters['access_token'];
 
-        // Authentication completed, you may use the access token to
-        // access user-specific data from Google.
-        //
-        // At this step, you may want to verify that the nonce
-        // from the id token matches the one you generated previously.
-        //
-        // Example:
-        // Signing-in with Firebase Auth credentials using the retrieved
-        // id and access tokens.
-        // print("signing in...");
         setState(() {
           _loggedInEmail = "Signing you in...";
         });
@@ -100,12 +93,21 @@ class _LoginPageState extends State<LoginPage> {
     }
     _auth.authStateChanges().listen((User? user) {
       if (user != null) {
-        // if (mounted) {
-        //   setState(() {
-        //     _isLoggedIn = true;
-        //     _loggedInEmail = user.email ?? '';
-        //   });
-        // }
+        if (user.emailVerified) {
+          // Allow the user to log in
+          Navigator.pop(context); // Close the login page
+          // Navigate to the user account screen
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const NotepadHomePage()),
+          );
+        } else {
+          // Display a message indicating that the email is not verified
+          setState(() {
+            _isError = true;
+            _loggedInEmail = 'Please verify your email to login.';
+          });
+        }
         if (defaultTargetPlatform == TargetPlatform.macOS ||
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.windows) {
@@ -165,8 +167,20 @@ class _LoginPageState extends State<LoginPage> {
             child: const Text('Login'),
           ),
           if (_isError) Text(_loggedInEmail) else const Text('Not logged in'),
-
-          // Add a Google sign-in button
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RegisterPage(),
+                  ),
+                );
+              },
+              child: const Text('Register'),
+            ),
+          ),
           ElevatedButton(
             onPressed: () async {
               try {
@@ -189,50 +203,34 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<bool> signInWithGoogle() async {
     if (kIsWeb) {
-      // Create a new provider
       GoogleAuthProvider googleProvider = GoogleAuthProvider();
-
-      // googleProvider
-      //     .addScope('https://www.googleapis.com/auth/contacts.readonly');
       googleProvider.setCustomParameters({'login_hint': 'user@example.com'});
-
-      // Once signed in, return the UserCredential
       _auth.signInWithPopup(googleProvider);
       return true;
     } else if (defaultTargetPlatform == TargetPlatform.android ||
         defaultTargetPlatform == TargetPlatform.iOS) {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-      // Obtain the auth details from the request
       final GoogleSignInAuthentication? googleAuth =
           await googleUser?.authentication;
-
-      // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth?.accessToken,
         idToken: googleAuth?.idToken,
       );
-      // Once signed in, return the UserCredential
       _auth.signInWithCredential(credential);
       return true;
     } else if (defaultTargetPlatform == TargetPlatform.macOS ||
         defaultTargetPlatform == TargetPlatform.linux ||
         defaultTargetPlatform == TargetPlatform.windows) {
       final signInArgs = GoogleSignInArgs(
-        // The OAuth client id of your Google app.
         clientId:
             '967077780131-g9t7g577rsafrl40ko75k1i5kc435ns6.apps.googleusercontent.com',
-        // The URI to your redirect web page.
         redirectUri: 'https://notease-redirect.web.app',
-        // Basic scopes to retrieve the user's email and profile details.
         scope: [
           'https://www.googleapis.com/auth/userinfo.email',
           'https://www.googleapis.com/auth/userinfo.profile',
         ].join(' '),
         responseType: 'token id_token',
-        // Prompts the user for consent and to select an account.
         prompt: 'select_account consent',
-        // Random secure nonce to be checked after the sign-in flow completes.
         nonce: generateNonce(),
       );
       final authUri = Uri(
