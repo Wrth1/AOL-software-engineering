@@ -1,28 +1,29 @@
-// import 'dart:io';
+  // import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:testnote/home.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'package:testnote/none.dart'
-    if (dart.library.io) 'package:testnote/windows.dart';
+  import 'package:flutter/foundation.dart';
+  import 'package:flutter/material.dart';
+  import 'package:testnote/home.dart';
+  import 'package:firebase_core/firebase_core.dart';
+  import 'firebase_options.dart';
+  import 'package:testnote/email_verification_gate.dart';
+  import 'package:testnote/none.dart'
+      if (dart.library.io) 'package:testnote/windows.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  if (defaultTargetPlatform == TargetPlatform.windows) {
-    await register('notease');
+  void main() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    if (defaultTargetPlatform == TargetPlatform.windows) {
+      await register('notease');
+    }
+    runApp(const NotepadApp());
   }
-  runApp(const NotepadApp());
-}
 
-class NotepadApp extends StatelessWidget {
-  const NotepadApp({super.key});
+  class NotepadApp extends StatelessWidget {
+    const NotepadApp({super.key});
 
-  @override
+   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Notease',
@@ -30,7 +31,9 @@ class NotepadApp extends StatelessWidget {
         primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const NotepadHomePage(),
+      home: EmailVerificationGate( // Wrap the home widget with EmailVerificationGate
+        child: const NotepadHomePage(),
+      ),
     );
   }
 }

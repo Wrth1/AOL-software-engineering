@@ -91,7 +91,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       });
     }
-    _auth.authStateChanges().listen((User? user) {
+    _auth.authStateChanges().listen((User? user) async {
       if (user != null) {
         if (user.emailVerified) {
           // Allow the user to log in
@@ -102,12 +102,27 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (context) => const NotepadHomePage()),
           );
         } else {
-          // Display a message indicating that the email is not verified
-          setState(() {
-            _isError = true;
-            _loggedInEmail = 'Please verify your email to login.';
-          });
-        }
+        // Display a message indicating that the email is not verified
+          await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Email Not Verified'),
+                content: const Text('Please verify your email to login.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+        // Log out the user
+        await _auth.signOut();
+      }
         if (defaultTargetPlatform == TargetPlatform.macOS ||
             defaultTargetPlatform == TargetPlatform.linux ||
             defaultTargetPlatform == TargetPlatform.windows) {
