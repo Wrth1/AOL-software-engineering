@@ -64,11 +64,12 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           },
           child: const MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: Text('Notease - v0.3 | 16 Maret 2024'),
+            child: Text('Notease - v0.3.2.1 | 18 Maret 2024'),
           ),
         ),
         backgroundColor: const Color.fromARGB(255, 227, 179, 235),
         actions: [
+          
           IconButton(
             icon: const Icon(Icons.folder_open),
             onPressed: () async {
