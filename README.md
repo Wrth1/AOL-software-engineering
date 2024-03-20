@@ -1,2 +1,2 @@
 # AOL-software-engineering
-A group project for college assignment :)
+A group project for college assignment
