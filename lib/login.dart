@@ -83,9 +83,17 @@ class _LoginPageState extends State<LoginPage> {
           accessToken: authenticationAccessToken,
         );
 
-        await _auth.signInWithCredential(credential);
+        try {
+          await _auth.signInWithCredential(credential);
+        } on Exception {
+          setState(() {
+            _isError = true;
+            _loggedInEmail = "Something went wrong!";
+          });
+        }
         if (_auth.currentUser == null) {
           setState(() {
+            _isError = true;
             _loggedInEmail = "Something went wrong!";
           });
         }
@@ -102,33 +110,28 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (context) => const NotepadHomePage()),
           );
         } else {
-        // Display a message indicating that the email is not verified
+          // Display a message indicating that the email is not verified
           await showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Email Not Verified'),
-                content: const Text('Please verify your email to login.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-        // Log out the user
-        await _auth.signOut();
-      }
-        if (defaultTargetPlatform == TargetPlatform.macOS ||
-            defaultTargetPlatform == TargetPlatform.linux ||
-            defaultTargetPlatform == TargetPlatform.windows) {
-          listener.cancel();
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Email Not Verified'),
+                content: const Text(
+                    'Please verify your email to login. Check your email'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
+          );
+          // Log out the user
+          await _auth.signOut();
         }
-        Navigator.pop(context);
       }
     });
   }
@@ -164,50 +167,51 @@ class _LoginPageState extends State<LoginPage> {
           ElevatedButton(
             onPressed: () async {
               try {
-      if (_auth.currentUser == null) {
-        _auth.signInWithEmailAndPassword(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
-      } else {
-        if (_auth.currentUser!.emailVerified) {
-          // Allow login if email is verified
-          _auth.signInWithEmailAndPassword(
-            email: _emailController.text,
-            password: _passwordController.text,
-          );
-        } else {
-          // Display message if email is not verified
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: const Text('Email Not Verified'),
-                content: const Text('Please verify your email to login.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('OK'),
-                  ),
-                ],
-              );
+                if (_auth.currentUser == null) {
+                  _auth.signInWithEmailAndPassword(
+                    email: _emailController.text,
+                    password: _passwordController.text,
+                  );
+                } else {
+                  if (_auth.currentUser!.emailVerified) {
+                    // Allow login if email is verified
+                    _auth.signInWithEmailAndPassword(
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                    );
+                  } else {
+                    // Display message if email is not verified
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Register Success'),
+                          content: const Text(
+                              'Please verify your email to login. Check your email'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                }
+              } on Exception catch (e) {
+                if (mounted) {
+                  setState(() {
+                    _isError = true;
+                    _loggedInEmail = 'Error: ${e.toString()}';
+                  });
+                }
+              }
             },
-          );
-        }
-      }
-    } on Exception catch (e) {
-      if (mounted) {
-        setState(() {
-          _isError = true;
-          _loggedInEmail = 'Error: ${e.toString()}';
-        });
-      }
-    }
-  },
-  child: const Text('Login'),
-),
+            child: const Text('Login'),
+          ),
           if (_isError) Text(_loggedInEmail) else const Text('Not logged in'),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
 import 'package:testnote/login.dart';
@@ -64,7 +65,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           },
           child: const MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: Text('Notease - v0.3 | 20 Maret 2024'),
+            child: Text('Notease - v0.3.1 | 20 Maret 2024'),
           ),
         ),
         backgroundColor: const Color.fromARGB(255, 227, 179, 235),
@@ -87,6 +88,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                   ),
                 );
               } else {
+                await GoogleSignIn().disconnect();
                 await _auth.signOut();
               }
             },

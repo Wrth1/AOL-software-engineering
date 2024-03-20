@@ -23,7 +23,7 @@ class EmailVerificationGate extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Please verify your email to access this page.',
                   textAlign: TextAlign.center,
                 ),
@@ -35,7 +35,7 @@ class EmailVerificationGate extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => const LoginPage()),
                     );
                   },
-                  child: Text('Go to Login'),
+                  child: const Text('Go to Login'),
                 ),
               ],
             ),
