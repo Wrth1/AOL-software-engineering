@@ -164,23 +164,50 @@ class _LoginPageState extends State<LoginPage> {
           ElevatedButton(
             onPressed: () async {
               try {
-                if (_auth.currentUser == null) {
-                  _auth.signInWithEmailAndPassword(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                  );
-                }
-              } on Exception catch (e) {
-                if (mounted) {
-                  setState(() {
-                    _isError = true;
-                    _loggedInEmail = 'Error: ${e.toString()}';
-                  });
-                }
-              }
+      if (_auth.currentUser == null) {
+        _auth.signInWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+      } else {
+        if (_auth.currentUser!.emailVerified) {
+          // Allow login if email is verified
+          _auth.signInWithEmailAndPassword(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+        } else {
+          // Display message if email is not verified
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Email Not Verified'),
+                content: const Text('Please verify your email to login.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
             },
-            child: const Text('Login'),
-          ),
+          );
+        }
+      }
+    } on Exception catch (e) {
+      if (mounted) {
+        setState(() {
+          _isError = true;
+          _loggedInEmail = 'Error: ${e.toString()}';
+        });
+      }
+    }
+  },
+  child: const Text('Login'),
+),
           if (_isError) Text(_loggedInEmail) else const Text('Not logged in'),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
