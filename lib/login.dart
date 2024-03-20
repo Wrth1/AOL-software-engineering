@@ -95,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         if (user.emailVerified) {
           // Allow the user to log in
-          Navigator.pop(context); // Close the login page
+          // Navigator.pop(context); // Close the login page
           // Navigate to the user account screen
           Navigator.pushReplacement(
             context,
