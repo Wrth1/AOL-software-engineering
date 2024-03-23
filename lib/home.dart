@@ -1,13 +1,17 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
 import 'package:testnote/login.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:intl/intl.dart';
 
 class NotepadHomePage extends StatefulWidget {
   const NotepadHomePage({super.key});
@@ -25,6 +29,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   dynamic userData;
   dynamic notesDocRef;
   dynamic notesListener;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -45,90 +50,126 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: GestureDetector(
-          onTap: () {
-            // Open the link when the title is clicked
-            launchUrl(Uri(
-              scheme: 'https',
-              host: 'binusianorg-my.sharepoint.com',
-              path:
-                  '/personal/bill_elim_binus_ac_id/_layouts/15/guestaccess.aspx',
-              queryParameters: {
-                'share': 'EkEQg25whCZKtZOdahpRq5kBQybA6nFJ-an02U60GhuOdg',
-                'e': 'pW9qBv',
-              },
-            ));
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () async {
+            await selectNotesFromList(context);
           },
-          child: const MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: Text('Notease - v0.3.1 | 20 Maret 2024'),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Icon(Icons.arrow_back_rounded),
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 227, 179, 235),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.folder_open),
-            onPressed: () async {
-              await selectNotesFromList(context);
+        IconButton(
+          icon: Icon(Icons.share_rounded),
+          onPressed: () {
+            // Handle Share button
+          },
+        ),
+        IconButton(
+          icon: Icon(Icons.save_rounded),
+          onPressed: () {
+            // Handle save button press
+            _addNote();
+          },
+        ),
+      ],
+      title: GestureDetector(
+        onTap: () {
+          // Open the link when the title is clicked
+          launchUrl(Uri(
+            scheme: 'https',
+            host: 'binusianorg-my.sharepoint.com',
+            path:
+                '/personal/bill_elim_binus_ac_id/_layouts/15/guestaccess.aspx',
+            queryParameters: {
+              'share': 'EkEQg25whCZKtZOdahpRq5kBQybA6nFJ-an02U60GhuOdg',
+              'e': 'pW9qBv',
             },
-          ),
-          IconButton(
-            icon: Icon(_auth.currentUser == null ? Icons.login : Icons.logout),
-            onPressed: () async {
-              if (_auth.currentUser == null) {
-                // Navigate to the login page
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
-                  ),
-                );
-              } else {
-                await GoogleSignIn().disconnect();
-                await _auth.signOut();
-              }
-            },
-          ),
-          if (_auth.currentUser != null) // Check if the username is not empty
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                getUsername(),
-                style: const TextStyle(fontSize: 16),
-              ),
-            ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: TextField(
-              controller: _noteController,
-              maxLines: null,
-              expands: true,
-              decoration: const InputDecoration(
-                hintText: 'Enter your note',
-              ),
-              onSubmitted: (note) {
-                _addNote();
-              },
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _addNote();
+          ));
         },
-        child: Icon(editingIndex == -1 ? Icons.add : Icons.save),
+        child: const MouseRegion(
+          cursor: SystemMouseCursors.click,
+          child: Text(
+            "Notease - v0.3.2 | 20 Maret 2024",
+            style: TextStyle(
+              color: Color.fromARGB(255, 30, 29, 29),
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-    );
-  }
+      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+    ),
+    
+    body: Column(
+  children: [
+    Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 25.0), // Menambahkan padding horizontal
+        child: TextField(
+          controller: _noteController,
+          maxLines: null,
+          expands: true,
+          textAlignVertical: TextAlignVertical.top, // Mengatur teks ke atas
+          textAlign: TextAlign.start, // Mengatur teks ke kiri
+          decoration: InputDecoration(
+            hintText: 'Enter your note',
+            contentPadding: EdgeInsets.symmetric(vertical: 30.0), // Menambahkan padding vertikal
+          ),
+          onSubmitted: (note) {
+            _addNote();
+          },
+        ),
+      ),
+    ),
+  ],
+),
+
+
+    bottomNavigationBar: BottomAppBar(
+    elevation: 0, // Menghapus efek bayangan
+    shape: CircularNotchedRectangle(),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        IconButton(
+          icon: Icon(Icons.highlight_alt_rounded, size: 30, color: Colors.black),
+          onPressed: () {
+            // Handle highlight text button press
+          },
+          tooltip: "Highlight",
+        ),
+        IconButton(
+          icon: Icon(Icons.undo_rounded, size: 30, color: Colors.black),
+          onPressed: () {
+            // Handle undo button press
+          },
+          tooltip: "Undo",
+        ),
+        IconButton(
+          icon: Icon(Icons.redo_rounded, size: 30, color: Colors.black),
+          onPressed: () {
+            // Handle redo button press
+          },
+          tooltip: "Redo",
+        ),
+        IconButton(
+          icon: Icon(Icons.attach_file_rounded, size: 30, color: Colors.black),
+          onPressed: () {
+            // Handle add attachment button press
+          },
+          tooltip: "Attach-file",
+        ),
+      ],
+    ),
+  ),
+  );
+}
 
   Future<void> selectNotesFromList(BuildContext context) async {
     int oldEditingIndex = editingIndex;
