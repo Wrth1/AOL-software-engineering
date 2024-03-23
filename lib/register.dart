@@ -19,17 +19,33 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Register'),
-        backgroundColor: const Color.fromARGB(255, 227, 179, 235),
+        title: const Text(
+          'Note-Ease',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [
+          Center(
+            child: Text(
+              'Register',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: _emailController,
               decoration: const InputDecoration(
-                labelText: 'Email',
+                border: OutlineInputBorder(),
+                labelText: 'email@email.com',
               ),
             ),
           ),
@@ -38,6 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
+                border: OutlineInputBorder(),
                 labelText: 'Password',
               ),
               obscureText: true,
@@ -63,7 +80,19 @@ class _RegisterPageState extends State<RegisterPage> {
                 });
               }
             },
-            child: const Text('Register'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black, // Change button color to black
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // Set border radius to create a long square shape
+              ),
+              minimumSize: Size(400, 45), // Set the minimum size to match the width of the text fields
+            ),
+            child: const Text(
+              'Register',
+              style: TextStyle(
+                color: Colors.white, // Change text color to white
+              ),
+            ),
           ),
           if (_isError) Text(_loggedInEmail) else const SizedBox(),
         ],
