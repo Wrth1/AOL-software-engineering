@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:testnote/login.dart';
 
 class NotesListPage extends StatefulWidget {
   final Map<int, String> notes;
@@ -16,6 +18,7 @@ class NotesListPage extends StatefulWidget {
 
 class _NotesListPageState extends State<NotesListPage> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  dynamic userData;
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
   @override
@@ -32,45 +35,72 @@ class _NotesListPageState extends State<NotesListPage> {
         backgroundColor: Color.fromARGB(255, 255, 255, 255),
 
       // BUAT LOGIN TAPI GUE SKILL ISSUE COK ToT
-
-      ),
-
-      
-      body: Column(
-  children: [
-    Expanded(
-      child: ListView.builder(
-        itemCount: widget.notes.length,
-        itemBuilder: (context, index) {
-          final noteKey = widget.notes.keys.elementAt(index);
-          final noteValue = widget.notes.values.elementAt(index);
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Menambahkan padding vertikal dan horizontal
-            child: ListTile(
-              title: Padding(
-                padding: const EdgeInsets.only(right: 16.0), // Menambahkan padding kanan untuk teks
-                child: Text(noteValue),
-              ),
-              trailing: Padding(
-                padding: const EdgeInsets.only(left: 8.0), // Menambahkan padding kiri untuk ikon sampah
-                child: IconButton(
-                  icon: const Icon(Icons.delete_rounded),
-                  onPressed: () {
-                    // Handle delete button press
-                    _deleteNoteAtIndex(context, noteKey);
-                  },
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context, noteKey);
+      actions: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(right: 45.0),
+            child: IconButton(
+              icon: Icon(_auth.currentUser == null ? Icons.login_rounded : Icons.logout_rounded, color: Colors.black,),
+              onPressed: () async {
+                if (_auth.currentUser == null){
+                  await Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: (context) => const LoginPage(),  
+                    ),
+                  );
+                } else{
+                  await GoogleSignIn().disconnect();
+                  await _auth.signOut();
+                }
               },
             ),
-          );
-        },
+          ),
+          if (_auth.currentUser != null)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                getUsername(),
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+        ],
       ),
+      
+      body: Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: widget.notes.length,
+            itemBuilder: (context, index) {
+              final noteKey = widget.notes.keys.elementAt(index);
+              final noteValue = widget.notes.values.elementAt(index);
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0), // Menambahkan padding vertikal dan horizontal
+                child: ListTile(
+                  title: Padding(
+                    padding: const EdgeInsets.only(right: 16.0), // Menambahkan padding kanan untuk teks
+                    child: Text(noteValue),
+                  ),
+                  trailing: Padding(
+                    padding: const EdgeInsets.only(left: 8.0), // Menambahkan padding kiri untuk ikon sampah
+                    child: IconButton(
+                      icon: const Icon(Icons.delete_rounded),
+                      onPressed: () {
+                        // Handle delete button press
+                        _deleteNoteAtIndex(context, noteKey);
+                      },
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context, noteKey);
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     ),
-  ],
-),
 
 
 
@@ -98,9 +128,8 @@ class _NotesListPageState extends State<NotesListPage> {
         ),
       ),
     ),
-
-    );
-  }
+  );
+}
 
   void _deleteNoteAtIndex(BuildContext context, int index) {
     showDialog(
@@ -144,6 +173,14 @@ class _NotesListPageState extends State<NotesListPage> {
           widget.notes.remove(index);
         });
       });
+    }
+  }
+
+String getUsername() {
+    if (userData != null) {
+      return userData['username'];
+    } else {
+      return 'loading...';
     }
   }
 

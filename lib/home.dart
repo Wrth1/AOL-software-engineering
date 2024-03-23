@@ -58,20 +58,20 @@ Widget build(BuildContext context) {
           onTap: () async {
             await selectNotesFromList(context);
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Icon(Icons.arrow_back_rounded),
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            child: Icon(Icons.folder_copy_outlined, color: Colors.black,),
           ),
         ),
         actions: [
         IconButton(
-          icon: Icon(Icons.share_rounded),
+          icon: const Icon(Icons.share_rounded, color: Colors.black,),
           onPressed: () {
             // Handle Share button
           },
         ),
         IconButton(
-          icon: Icon(Icons.save_rounded),
+          icon: const Icon(Icons.save_rounded, color: Colors.black),
           onPressed: () {
             // Handle save button press
             _addNote();
@@ -103,7 +103,7 @@ Widget build(BuildContext context) {
           ),
         ),
       ),
-      backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
     ),
     
     body: Column(
@@ -117,7 +117,7 @@ Widget build(BuildContext context) {
           expands: true,
           textAlignVertical: TextAlignVertical.top, // Mengatur teks ke atas
           textAlign: TextAlign.start, // Mengatur teks ke kiri
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Enter your note',
             contentPadding: EdgeInsets.symmetric(vertical: 30.0), // Menambahkan padding vertikal
           ),
@@ -133,33 +133,54 @@ Widget build(BuildContext context) {
 
     bottomNavigationBar: BottomAppBar(
     elevation: 0, // Menghapus efek bayangan
-    shape: CircularNotchedRectangle(),
+    shape: const CircularNotchedRectangle(),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         IconButton(
-          icon: Icon(Icons.highlight_alt_rounded, size: 30, color: Colors.black),
+          icon: const Icon(Icons.highlight, size: 30, color: Colors.black),
           onPressed: () {
             // Handle highlight text button press
           },
           tooltip: "Highlight",
         ),
         IconButton(
-          icon: Icon(Icons.undo_rounded, size: 30, color: Colors.black),
+          icon: const Icon(Icons.format_italic_rounded, size: 30, color: Colors.black),
+          onPressed: () {
+            // Handle highlight text button press
+          },
+          tooltip: "Highlight",
+        ),
+        IconButton(
+          icon: const Icon(Icons.format_bold_rounded, size: 30, color: Colors.black),
+          onPressed: () {
+            // Handle highlight text button press
+          },
+          tooltip: "Highlight",
+        ),
+        IconButton(
+          icon: const Icon(Icons.format_underline_rounded, size: 30, color: Colors.black),
+          onPressed: () {
+            // Handle highlight text button press
+          },
+          tooltip: "Highlight",
+        ),
+        IconButton(
+          icon: const Icon(Icons.undo_rounded, size: 30, color: Colors.black),
           onPressed: () {
             // Handle undo button press
           },
           tooltip: "Undo",
         ),
         IconButton(
-          icon: Icon(Icons.redo_rounded, size: 30, color: Colors.black),
+          icon: const Icon(Icons.redo_rounded, size: 30, color: Colors.black),
           onPressed: () {
             // Handle redo button press
           },
           tooltip: "Redo",
         ),
         IconButton(
-          icon: Icon(Icons.attach_file_rounded, size: 30, color: Colors.black),
+          icon: const Icon(Icons.attach_file_rounded, size: 30, color: Colors.black),
           onPressed: () {
             // Handle add attachment button press
           },
