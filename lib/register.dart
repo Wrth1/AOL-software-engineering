@@ -12,8 +12,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool _isError = false;
-  String _loggedInEmail = '';
 
   @override
   Widget build(BuildContext context) {
@@ -70,16 +68,25 @@ class _RegisterPageState extends State<RegisterPage> {
                 );
                 if (newUserCredential.user != null) {
                   await newUserCredential.user!.sendEmailVerification();
-                  setState(() {
-                    _loggedInEmail =
-                        'Registration successful! Verification email sent.';
-                  });
                 }
               } on FirebaseAuthException catch (e) {
-                setState(() {
-                  _isError = true;
-                  _loggedInEmail = 'Error: ${e.message}';
-                });
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Register Failed'),
+                      content: const Text('Please try again.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('OK'),
+                        ),
+                      ],
+                    );
+                  },
+                );
               }
             },
             style: ElevatedButton.styleFrom(
@@ -98,7 +105,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-          if (_isError) Text(_loggedInEmail) else const SizedBox(),
         ],
       ),
     );

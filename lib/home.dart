@@ -3,8 +3,10 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
+import 'package:testnote/login.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NotepadHomePage extends StatefulWidget {
@@ -69,7 +71,34 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
             // Handle save button press
             _addNote();
           },
-        ),
+          ),
+          IconButton(
+            icon: Icon(_auth.currentUser == null ? Icons.login : Icons.logout),
+            onPressed: () async {
+              if (_auth.currentUser == null) {
+                // Navigate to the login page
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              } else {
+                if (GoogleSignIn().currentUser != null) {
+                  await GoogleSignIn().disconnect();
+                }
+                await _auth.signOut();
+              }
+            },
+          ),
+          if (_auth.currentUser != null) // Check if the username is not empty
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                getUsername(),
+                style: const TextStyle(fontSize: 16),
+              ),
+          ),
       ],
       title: GestureDetector(
         onTap: () {

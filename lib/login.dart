@@ -175,14 +175,14 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
               try {
                 if (_auth.currentUser == null) {
-                  _auth.signInWithEmailAndPassword(
+                  await _auth.signInWithEmailAndPassword(
                     email: _emailController.text,
                     password: _passwordController.text,
                   );
                 } else {
                   if (_auth.currentUser!.emailVerified) {
                     // Allow login if email is verified
-                    _auth.signInWithEmailAndPassword(
+                    await _auth.signInWithEmailAndPassword(
                       email: _emailController.text,
                       password: _passwordController.text,
                     );
@@ -210,6 +210,25 @@ class _LoginPageState extends State<LoginPage> {
                 }
               } on Exception catch (e) {
                 if (mounted) {
+                  // show a popup saying incorrect username or password/something went wrong
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Login Failed'),
+                        content: const Text(
+                            'Incorrect username or password/something went wrong. Please try again.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                   setState(() {});
                 }
               }
