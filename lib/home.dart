@@ -53,24 +53,33 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           onTap: () async {
             await selectNotesFromList(context);
           },
-          child: const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Icon(Icons.folder_copy_outlined, color: Colors.black,),
+          child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Icon(
+                Icons.folder_copy_outlined,
+                color: Colors.black,
+              ),
+            ),
           ),
         ),
         actions: [
-        IconButton(
-          icon: const Icon(Icons.share_rounded, color: Colors.black,),
-          onPressed: () {
-            // Handle Share button
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.save_rounded, color: Colors.black),
-          onPressed: () {
-            // Handle save button press
-            _addNote();
-          },
+          IconButton(
+            icon: const Icon(
+              Icons.share_rounded,
+              color: Colors.black,
+            ),
+            onPressed: () {
+              // Handle Share button
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.save_rounded, color: Colors.black),
+            onPressed: () {
+              // Handle save button press
+              _addNote();
+            },
           ),
           IconButton(
             icon: Icon(_auth.currentUser == null ? Icons.login : Icons.logout),
@@ -98,121 +107,127 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                 getUsername(),
                 style: const TextStyle(fontSize: 16),
               ),
-          ),
-      ],
-      title: GestureDetector(
-        onTap: () {
-          // Open the link when the title is clicked
-          launchUrl(Uri(
-            scheme: 'https',
-            host: 'binusianorg-my.sharepoint.com',
-            path:
-                '/personal/bill_elim_binus_ac_id/_layouts/15/guestaccess.aspx',
-            queryParameters: {
-              'share': 'EkEQg25whCZKtZOdahpRq5kBQybA6nFJ-an02U60GhuOdg',
-              'e': 'pW9qBv',
-            },
-          ));
-        },
-        child: const MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: Text(
-            "Notease - v0.3.2 | 20 Maret 2024",
-            style: TextStyle(
-              color: Color.fromARGB(255, 30, 29, 29),
-              fontWeight: FontWeight.bold,
+            ),
+        ],
+        title: GestureDetector(
+          onTap: () {
+            // Open the link when the title is clicked
+            launchUrl(Uri(
+              scheme: 'https',
+              host: 'binusianorg-my.sharepoint.com',
+              path:
+                  '/personal/bill_elim_binus_ac_id/_layouts/15/guestaccess.aspx',
+              queryParameters: {
+                'share': 'EkEQg25whCZKtZOdahpRq5kBQybA6nFJ-an02U60GhuOdg',
+                'e': 'pW9qBv',
+              },
+            ));
+          },
+          child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Text(
+              "Notease - v0.3.2 | 20 Maret 2024",
+              style: TextStyle(
+                color: Color.fromARGB(255, 30, 29, 29),
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
-      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-    ),
-    
-    body: Column(
-  children: [
-    Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 25.0), // Menambahkan padding horizontal
-        child: TextField(
-          controller: _noteController,
-          maxLines: null,
-          expands: true,
-          textAlignVertical: TextAlignVertical.top, // Mengatur teks ke atas
-          textAlign: TextAlign.start, // Mengatur teks ke kiri
-          decoration: const InputDecoration(
-            hintText: 'Enter your note',
-            contentPadding: EdgeInsets.symmetric(vertical: 30.0), // Menambahkan padding vertikal
+      body: Column(
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 25.0), // Menambahkan padding horizontal
+              child: TextField(
+                controller: _noteController,
+                maxLines: null,
+                expands: true,
+                textAlignVertical:
+                    TextAlignVertical.top, // Mengatur teks ke atas
+                textAlign: TextAlign.start, // Mengatur teks ke kiri
+                decoration: const InputDecoration(
+                  hintText: 'Enter your note',
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 30.0), // Menambahkan padding vertikal
+                ),
+                onSubmitted: (note) {
+                  _addNote();
+                },
+              ),
+            ),
           ),
-          onSubmitted: (note) {
-            _addNote();
-          },
+        ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 0, // Menghapus efek bayangan
+        shape: const CircularNotchedRectangle(),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.highlight, size: 30, color: Colors.black),
+              onPressed: () {
+                // Handle highlight text button press
+              },
+              tooltip: "Highlight",
+            ),
+            IconButton(
+              icon: const Icon(Icons.format_italic_rounded,
+                  size: 30, color: Colors.black),
+              onPressed: () {
+                // Handle highlight text button press
+              },
+              tooltip: "Highlight",
+            ),
+            IconButton(
+              icon: const Icon(Icons.format_bold_rounded,
+                  size: 30, color: Colors.black),
+              onPressed: () {
+                // Handle highlight text button press
+              },
+              tooltip: "Highlight",
+            ),
+            IconButton(
+              icon: const Icon(Icons.format_underline_rounded,
+                  size: 30, color: Colors.black),
+              onPressed: () {
+                // Handle highlight text button press
+              },
+              tooltip: "Highlight",
+            ),
+            IconButton(
+              icon:
+                  const Icon(Icons.undo_rounded, size: 30, color: Colors.black),
+              onPressed: () {
+                // Handle undo button press
+              },
+              tooltip: "Undo",
+            ),
+            IconButton(
+              icon:
+                  const Icon(Icons.redo_rounded, size: 30, color: Colors.black),
+              onPressed: () {
+                // Handle redo button press
+              },
+              tooltip: "Redo",
+            ),
+            IconButton(
+              icon: const Icon(Icons.attach_file_rounded,
+                  size: 30, color: Colors.black),
+              onPressed: () {
+                // Handle add attachment button press
+              },
+              tooltip: "Attach-file",
+            ),
+          ],
         ),
       ),
-    ),
-  ],
-),
-
-
-    bottomNavigationBar: BottomAppBar(
-    elevation: 0, // Menghapus efek bayangan
-    shape: const CircularNotchedRectangle(),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.highlight, size: 30, color: Colors.black),
-          onPressed: () {
-            // Handle highlight text button press
-          },
-          tooltip: "Highlight",
-        ),
-        IconButton(
-          icon: const Icon(Icons.format_italic_rounded, size: 30, color: Colors.black),
-          onPressed: () {
-            // Handle highlight text button press
-          },
-          tooltip: "Highlight",
-        ),
-        IconButton(
-          icon: const Icon(Icons.format_bold_rounded, size: 30, color: Colors.black),
-          onPressed: () {
-            // Handle highlight text button press
-          },
-          tooltip: "Highlight",
-        ),
-        IconButton(
-          icon: const Icon(Icons.format_underline_rounded, size: 30, color: Colors.black),
-          onPressed: () {
-            // Handle highlight text button press
-          },
-          tooltip: "Highlight",
-        ),
-        IconButton(
-          icon: const Icon(Icons.undo_rounded, size: 30, color: Colors.black),
-          onPressed: () {
-            // Handle undo button press
-          },
-          tooltip: "Undo",
-        ),
-        IconButton(
-          icon: const Icon(Icons.redo_rounded, size: 30, color: Colors.black),
-          onPressed: () {
-            // Handle redo button press
-          },
-          tooltip: "Redo",
-        ),
-        IconButton(
-          icon: const Icon(Icons.attach_file_rounded, size: 30, color: Colors.black),
-          onPressed: () {
-            // Handle add attachment button press
-          },
-          tooltip: "Attach-file",
-        ),
-      ],
-    ),
-  ),
-  );
-}
+    );
+  }
 
   Future<void> selectNotesFromList(BuildContext context) async {
     int oldEditingIndex = editingIndex;
