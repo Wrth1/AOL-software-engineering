@@ -1,5 +1,3 @@
-// ignore_for_file: prefer_const_constructors
-
 import 'dart:async';
 import 'dart:math';
 
@@ -60,8 +58,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool _isError = false;
-  String _loggedInEmail = '';
   late StreamSubscription<Uri> listener;
 
   @override
@@ -77,9 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         final authenticationIdToken = uri.queryParameters['id_token'];
         final authenticationAccessToken = uri.queryParameters['access_token'];
 
-        setState(() {
-          _loggedInEmail = "Signing you in...";
-        });
+        setState(() {});
         final credential = GoogleAuthProvider.credential(
           idToken: authenticationIdToken,
           accessToken: authenticationAccessToken,
@@ -88,16 +82,10 @@ class _LoginPageState extends State<LoginPage> {
         try {
           await _auth.signInWithCredential(credential);
         } on Exception {
-          setState(() {
-            _isError = true;
-            _loggedInEmail = "Something went wrong!";
-          });
+          setState(() {});
         }
         if (_auth.currentUser == null) {
-          setState(() {
-            _isError = true;
-            _loggedInEmail = "Something went wrong!";
-          });
+          setState(() {});
         }
       });
     }
@@ -149,11 +137,11 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [
-          Center(
+          const Center(
             child: Text(
               'Login',
               style: TextStyle(
@@ -222,19 +210,18 @@ class _LoginPageState extends State<LoginPage> {
                 }
               } on Exception catch (e) {
                 if (mounted) {
-                  setState(() {
-                    _isError = true;
-                    _loggedInEmail = 'Error: ${e.toString()}';
-                  });
+                  setState(() {});
                 }
               }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black, // Change button color to black
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0), // Set border radius to create a long square shape
+                borderRadius: BorderRadius.circular(
+                    8.0), // Set border radius to create a long square shape
               ),
-              minimumSize: Size(400, 45), // Set the minimum size to match the width of the text fields
+              minimumSize: const Size(400,
+                  45), // Set the minimum size to match the width of the text fields
             ),
             child: const Text(
               'Login',
@@ -246,7 +233,8 @@ class _LoginPageState extends State<LoginPage> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center, // Center the children horizontally
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the children horizontally
               children: [
                 const Expanded(
                   child: Divider(
@@ -258,7 +246,8 @@ class _LoginPageState extends State<LoginPage> {
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: const Text(
                     ' or continue with ',
-                    style: TextStyle(fontSize: 16.0, color: Color.fromARGB(138, 0, 0, 0)),
+                    style: TextStyle(
+                        fontSize: 16.0, color: Color.fromARGB(138, 0, 0, 0)),
                   ),
                 ),
                 const Expanded(
@@ -282,24 +271,30 @@ class _LoginPageState extends State<LoginPage> {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color.fromARGB(255, 216, 216, 216), // Change button color to black
+                backgroundColor: const Color.fromARGB(
+                    255, 216, 216, 216), // Change button color to black
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0), // Set border radius to create a long square shape
+                  borderRadius: BorderRadius.circular(
+                      8.0), // Set border radius to create a long square shape
                 ),
-                minimumSize: Size(400, 45), // Set the minimum size to match the width of the text fields
+                minimumSize: const Size(400,
+                    45), // Set the minimum size to match the width of the text fields
               ),
               child: const Text(
                 'Register',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 0, 0, 0), // Change text color to white
+                  color: Color.fromARGB(
+                      255, 0, 0, 0), // Change text color to white
                 ),
               ),
             ),
           ),
           Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(0.0), // Set borderRadius to 0.0 for square shape
-              shape: BoxShape.rectangle, // Set shape to BoxShape.rectangle for square shape
+              borderRadius: BorderRadius.circular(
+                  0.0), // Set borderRadius to 0.0 for square shape
+              shape: BoxShape
+                  .rectangle, // Set shape to BoxShape.rectangle for square shape
             ),
             child: ElevatedButton(
               onPressed: () async {
@@ -307,24 +302,25 @@ class _LoginPageState extends State<LoginPage> {
                   await signInWithGoogle();
                 } on Exception catch (e) {
                   if (mounted) {
-                    setState(() {
-                      _isError = true;
-                      _loggedInEmail = e.toString();
-                    });
+                    setState(() {});
                   }
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 216, 216, 216), // Change button color to black
+                backgroundColor: const Color.fromARGB(
+                    255, 216, 216, 216), // Change button color to black
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0), // Set border radius to create a long square shape
+                  borderRadius: BorderRadius.circular(
+                      8.0), // Set border radius to create a long square shape
                 ),
-                minimumSize: Size(400, 45), // Set the minimum size to match the width of the text fields
+                minimumSize: const Size(400,
+                    45), // Set the minimum size to match the width of the text fields
               ),
               child: const Text(
                 'Sign in with Google',
                 style: TextStyle(
-                  color: Color.fromARGB(255, 0, 0, 0), // Change text color to white
+                  color: Color.fromARGB(
+                      255, 0, 0, 0), // Change text color to white
                 ),
               ),
             ),

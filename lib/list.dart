@@ -32,7 +32,7 @@ class _NotesListPageState extends State<NotesListPage> {
               fontWeight: FontWeight.bold
             ),
           ),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
 
       // BUAT LOGIN TAPI GUE SKILL ISSUE COK ToT
       actions: <Widget>[
@@ -108,13 +108,13 @@ class _NotesListPageState extends State<NotesListPage> {
   
     bottomNavigationBar: BottomAppBar(
       elevation: 0, // Menghapus efek bayangan
-      shape: CircularNotchedRectangle(),
+      shape: const CircularNotchedRectangle(),
       child: SafeArea(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center, // Membuat ikon berjarak
           children: [
             IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.add_box_outlined,
                 size: 30,
                 color: Colors.black,
@@ -123,7 +123,7 @@ class _NotesListPageState extends State<NotesListPage> {
                 Navigator.pop(context, -1);
               },
             ),
-            Text('New-note', style: TextStyle(fontWeight: FontWeight.bold),),
+            const Text('New-note', style: TextStyle(fontWeight: FontWeight.bold),),
           ],
         ),
       ),
@@ -143,14 +143,14 @@ class _NotesListPageState extends State<NotesListPage> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
+              child: const Text('Cancel', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 _removeNoteAtIndex(index);
               },
-              child: Text('Delete', style: TextStyle(color: const Color.fromARGB(255, 254, 43, 43), fontWeight: FontWeight.bold),),
+              child: const Text('Delete', style: TextStyle(color: Color.fromARGB(255, 254, 43, 43), fontWeight: FontWeight.bold),),
             ),
           ],
         );

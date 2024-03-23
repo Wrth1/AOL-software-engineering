@@ -31,8 +31,8 @@
         primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: EmailVerificationGate( // Wrap the home widget with EmailVerificationGate
-        child: const NotepadHomePage(),
+      home: const EmailVerificationGate( // Wrap the home widget with EmailVerificationGate
+        child: NotepadHomePage(),
       ),
     );
   }

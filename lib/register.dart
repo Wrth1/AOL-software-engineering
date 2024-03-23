@@ -26,11 +26,11 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
         ),
         centerTitle: true,
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [
-          Center(
+          const Center(
             child: Text(
               'Register',
               style: TextStyle(
@@ -63,14 +63,16 @@ class _RegisterPageState extends State<RegisterPage> {
           ElevatedButton(
             onPressed: () async {
               try {
-                final newUserCredential = await _auth.createUserWithEmailAndPassword(
+                final newUserCredential =
+                    await _auth.createUserWithEmailAndPassword(
                   email: _emailController.text,
                   password: _passwordController.text,
                 );
                 if (newUserCredential.user != null) {
                   await newUserCredential.user!.sendEmailVerification();
                   setState(() {
-                    _loggedInEmail = 'Registration successful! Verification email sent.';
+                    _loggedInEmail =
+                        'Registration successful! Verification email sent.';
                   });
                 }
               } on FirebaseAuthException catch (e) {
@@ -83,9 +85,11 @@ class _RegisterPageState extends State<RegisterPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.black, // Change button color to black
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0), // Set border radius to create a long square shape
+                borderRadius: BorderRadius.circular(
+                    8.0), // Set border radius to create a long square shape
               ),
-              minimumSize: Size(400, 45), // Set the minimum size to match the width of the text fields
+              minimumSize: const Size(400,
+                  45), // Set the minimum size to match the width of the text fields
             ),
             child: const Text(
               'Register',

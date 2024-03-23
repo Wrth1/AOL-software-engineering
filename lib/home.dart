@@ -1,17 +1,11 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
-import 'package:testnote/login.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:intl/intl.dart';
 
 class NotepadHomePage extends StatefulWidget {
   const NotepadHomePage({super.key});
@@ -29,7 +23,6 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   dynamic userData;
   dynamic notesDocRef;
   dynamic notesListener;
-  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -50,10 +43,10 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     });
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
         leading: GestureDetector(
           onTap: () async {
             await selectNotesFromList(context);
