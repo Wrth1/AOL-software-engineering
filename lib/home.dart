@@ -65,15 +65,15 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           ),
         ),
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.share_rounded,
-              color: Colors.black,
-            ),
-            onPressed: () {
-              // Handle Share button
-            },
-          ),
+          // IconButton(
+          //   icon: const Icon(
+          //     Icons.share_rounded,
+          //     color: Colors.black,
+          //   ),
+          //   onPressed: () {
+          //     // Handle Share button
+          //   },
+          // ),
           IconButton(
             icon: const Icon(Icons.save_rounded, color: Colors.black),
             onPressed: () {
@@ -162,70 +162,70 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 0, // Menghapus efek bayangan
-        shape: const CircularNotchedRectangle(),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.highlight, size: 30, color: Colors.black),
-              onPressed: () {
-                // Handle highlight text button press
-              },
-              tooltip: "Highlight",
-            ),
-            IconButton(
-              icon: const Icon(Icons.format_italic_rounded,
-                  size: 30, color: Colors.black),
-              onPressed: () {
-                // Handle highlight text button press
-              },
-              tooltip: "Highlight",
-            ),
-            IconButton(
-              icon: const Icon(Icons.format_bold_rounded,
-                  size: 30, color: Colors.black),
-              onPressed: () {
-                // Handle highlight text button press
-              },
-              tooltip: "Highlight",
-            ),
-            IconButton(
-              icon: const Icon(Icons.format_underline_rounded,
-                  size: 30, color: Colors.black),
-              onPressed: () {
-                // Handle highlight text button press
-              },
-              tooltip: "Highlight",
-            ),
-            IconButton(
-              icon:
-                  const Icon(Icons.undo_rounded, size: 30, color: Colors.black),
-              onPressed: () {
-                // Handle undo button press
-              },
-              tooltip: "Undo",
-            ),
-            IconButton(
-              icon:
-                  const Icon(Icons.redo_rounded, size: 30, color: Colors.black),
-              onPressed: () {
-                // Handle redo button press
-              },
-              tooltip: "Redo",
-            ),
-            IconButton(
-              icon: const Icon(Icons.attach_file_rounded,
-                  size: 30, color: Colors.black),
-              onPressed: () {
-                // Handle add attachment button press
-              },
-              tooltip: "Attach-file",
-            ),
-          ],
-        ),
-      ),
+      // bottomNavigationBar: BottomAppBar(
+      //   elevation: 0, // Menghapus efek bayangan
+      //   shape: const CircularNotchedRectangle(),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //     children: [
+      //       IconButton(
+      //         icon: const Icon(Icons.highlight, size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.format_italic_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.format_bold_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.format_underline_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon:
+      //             const Icon(Icons.undo_rounded, size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle undo button press
+      //         },
+      //         tooltip: "Undo",
+      //       ),
+      //       IconButton(
+      //         icon:
+      //             const Icon(Icons.redo_rounded, size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle redo button press
+      //         },
+      //         tooltip: "Redo",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.attach_file_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle add attachment button press
+      //         },
+      //         tooltip: "Attach-file",
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 
