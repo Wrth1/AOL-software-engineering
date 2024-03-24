@@ -58,8 +58,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  bool _isError = false;
-  String _loggedInEmail = '';
   late StreamSubscription<Uri> listener;
 
   @override
@@ -75,9 +73,7 @@ class _LoginPageState extends State<LoginPage> {
         final authenticationIdToken = uri.queryParameters['id_token'];
         final authenticationAccessToken = uri.queryParameters['access_token'];
 
-        setState(() {
-          _loggedInEmail = "Signing you in...";
-        });
+        setState(() {});
         final credential = GoogleAuthProvider.credential(
           idToken: authenticationIdToken,
           accessToken: authenticationAccessToken,
@@ -86,16 +82,10 @@ class _LoginPageState extends State<LoginPage> {
         try {
           await _auth.signInWithCredential(credential);
         } on Exception {
-          setState(() {
-            _isError = true;
-            _loggedInEmail = "Something went wrong!";
-          });
+          setState(() {});
         }
         if (_auth.currentUser == null) {
-          setState(() {
-            _isError = true;
-            _loggedInEmail = "Something went wrong!";
-          });
+          setState(() {});
         }
       });
     }
@@ -140,17 +130,33 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login'),
-        backgroundColor: const Color.fromARGB(255, 227, 179, 235),
+        title: const Text(
+          'Note-Ease',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [
-          Padding(
+          const Center(
+            child: Text(
+              'Login',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          Container(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               controller: _emailController,
               decoration: const InputDecoration(
-                labelText: 'Email',
+                border: OutlineInputBorder(), // Add border to create a box
+                labelText: 'email@email.com',
               ),
             ),
           ),
@@ -160,6 +166,7 @@ class _LoginPageState extends State<LoginPage> {
               controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Password',
+                border: OutlineInputBorder(), // Add border to create a box
               ),
               obscureText: true,
             ),
@@ -168,14 +175,14 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
               try {
                 if (_auth.currentUser == null) {
-                  _auth.signInWithEmailAndPassword(
+                  await _auth.signInWithEmailAndPassword(
                     email: _emailController.text,
                     password: _passwordController.text,
                   );
                 } else {
                   if (_auth.currentUser!.emailVerified) {
                     // Allow login if email is verified
-                    _auth.signInWithEmailAndPassword(
+                    await _auth.signInWithEmailAndPassword(
                       email: _emailController.text,
                       password: _passwordController.text,
                     );
@@ -203,16 +210,74 @@ class _LoginPageState extends State<LoginPage> {
                 }
               } on Exception catch (e) {
                 if (mounted) {
-                  setState(() {
-                    _isError = true;
-                    _loggedInEmail = 'Error: ${e.toString()}';
-                  });
+                  // show a popup saying incorrect username or password/something went wrong
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Login Failed'),
+                        content: const Text(
+                            'Incorrect username or password/something went wrong. Please try again.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                  setState(() {});
                 }
               }
             },
-            child: const Text('Login'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.black, // Change button color to black
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                    8.0), // Set border radius to create a long square shape
+              ),
+              minimumSize: const Size(400,
+                  45), // Set the minimum size to match the width of the text fields
+            ),
+            child: const Text(
+              'Login',
+              style: TextStyle(
+                color: Colors.white, // Change text color to white
+              ),
+            ),
           ),
-          if (_isError) Text(_loggedInEmail) else const Text('Not logged in'),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Center the children horizontally
+              children: [
+                const Expanded(
+                  child: Divider(
+                    color: Color.fromARGB(80, 0, 0, 0),
+                    thickness: 1.0,
+                  ),
+                ), // Add a divider line on the left
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: const Text(
+                    ' or continue with ',
+                    style: TextStyle(
+                        fontSize: 16.0, color: Color.fromARGB(138, 0, 0, 0)),
+                  ),
+                ),
+                const Expanded(
+                  child: Divider(
+                    color: Color.fromARGB(80, 0, 0, 0),
+                    thickness: 1.0,
+                  ),
+                ), // Add a divider line on the right
+              ],
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: ElevatedButton(
@@ -224,23 +289,60 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 );
               },
-              child: const Text('Register'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(
+                    255, 216, 216, 216), // Change button color to black
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      8.0), // Set border radius to create a long square shape
+                ),
+                minimumSize: const Size(400,
+                    45), // Set the minimum size to match the width of the text fields
+              ),
+              child: const Text(
+                'Register',
+                style: TextStyle(
+                  color: Color.fromARGB(
+                      255, 0, 0, 0), // Change text color to white
+                ),
+              ),
             ),
           ),
-          ElevatedButton(
-            onPressed: () async {
-              try {
-                await signInWithGoogle();
-              } on Exception catch (e) {
-                if (mounted) {
-                  setState(() {
-                    _isError = true;
-                    _loggedInEmail = e.toString();
-                  });
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                  0.0), // Set borderRadius to 0.0 for square shape
+              shape: BoxShape
+                  .rectangle, // Set shape to BoxShape.rectangle for square shape
+            ),
+            child: ElevatedButton(
+              onPressed: () async {
+                try {
+                  await signInWithGoogle();
+                } on Exception catch (e) {
+                  if (mounted) {
+                    setState(() {});
+                  }
                 }
-              }
-            },
-            child: const Text('Sign in with Google'),
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(
+                    255, 216, 216, 216), // Change button color to black
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      8.0), // Set border radius to create a long square shape
+                ),
+                minimumSize: const Size(400,
+                    45), // Set the minimum size to match the width of the text fields
+              ),
+              child: const Text(
+                'Sign in with Google',
+                style: TextStyle(
+                  color: Color.fromARGB(
+                      255, 0, 0, 0), // Change text color to white
+                ),
+              ),
+            ),
           ),
         ],
       ),
