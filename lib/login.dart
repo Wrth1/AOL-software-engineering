@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:app_links/app_links.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:testnote/home.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -134,39 +136,58 @@ class _LoginPageState extends State<LoginPage> {
           'Note-Ease',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
         ),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
+      
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        
         children: [
           const Center(
             child: Text(
-              'Login',
+              'LOGIN',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 25,
                 fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
+          const Text(
+              'Welcome back to Note-Ease!',
+              style: TextStyle(
+                fontSize: 16,
+                color: Color.fromARGB(255, 0, 0, 0),
+                // fontWeight: FontWeight.bold
+              ),
+            ),
+          const SizedBox(height: 50),
           Container(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(10.0),
+            width: 385,
+            height: 65,
             child: TextField(
               controller: _emailController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(), // Add border to create a box
+                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))), // Add border to create a box
                 labelText: 'email@email.com',
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            width: 385,
+            height: 65,
             child: TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Password',
-                border: OutlineInputBorder(), // Add border to create a box
+                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))), // Add border to create a box
               ),
               obscureText: true,
             ),
@@ -237,9 +258,9 @@ class _LoginPageState extends State<LoginPage> {
               backgroundColor: Colors.black, // Change button color to black
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(
-                    8.0), // Set border radius to create a long square shape
+                    10.0), // Set border radius to create a long square shape
               ),
-              minimumSize: const Size(400,
+              minimumSize: const Size(370,
                   45), // Set the minimum size to match the width of the text fields
             ),
             child: const Text(
@@ -278,36 +299,6 @@ class _LoginPageState extends State<LoginPage> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const RegisterPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                    255, 216, 216, 216), // Change button color to black
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      8.0), // Set border radius to create a long square shape
-                ),
-                minimumSize: const Size(400,
-                    45), // Set the minimum size to match the width of the text fields
-              ),
-              child: const Text(
-                'Register',
-                style: TextStyle(
-                  color: Color.fromARGB(
-                      255, 0, 0, 0), // Change text color to white
-                ),
-              ),
-            ),
-          ),
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(
@@ -326,13 +317,13 @@ class _LoginPageState extends State<LoginPage> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(
-                    255, 216, 216, 216), // Change button color to black
+                elevation: 0,
+                backgroundColor: Color.fromARGB(255, 239, 239, 239), // Change button color to black
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(
                       8.0), // Set border radius to create a long square shape
                 ),
-                minimumSize: const Size(400,
+                minimumSize: const Size(365,
                     45), // Set the minimum size to match the width of the text fields
               ),
               child: const Text(
@@ -340,6 +331,37 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                   color: Color.fromARGB(
                       255, 0, 0, 0), // Change text color to white
+                ),
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RegisterPage(),
+                  ),
+                );
+              },    
+              style: ElevatedButton.styleFrom(
+                elevation: 0,
+                backgroundColor: Color.fromARGB(255, 255, 255, 255), // Change button color to black
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(
+                      8.0), // Set border radius to create a long square shape
+                ),
+                minimumSize: const Size(365,
+                    45), // Set the minimum size to match the width of the text fields
+              ),
+              child: const Text(
+                'Ready to simplify your note? Click here to join Now!',
+                style: TextStyle(
+                  color: Color.fromARGB(255, 136, 135, 135),
+                    fontSize: 13.0, // Change text color to white
                 ),
               ),
             ),

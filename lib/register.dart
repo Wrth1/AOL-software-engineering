@@ -1,5 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -21,38 +23,61 @@ class _RegisterPageState extends State<RegisterPage> {
           'Note-Ease',
           style: TextStyle(
             fontWeight: FontWeight.bold,
+            color: Color.fromARGB(255, 0, 0, 0),
           ),
         ),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const Center(
             child: Text(
-              'Register',
+              'Create an account',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 27,
                 fontWeight: FontWeight.bold,
+                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: Container(
+              child: Text(
+                'Simplify Your Notes and Amplify Your Works, with Note-Ease!',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Color.fromARGB(255, 0, 0, 0),
+                  // fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 50),
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            width: 385,
+            height: 65,
             child: TextField(
               controller: _emailController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                 labelText: 'email@email.com',
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          Container(
+            padding: const EdgeInsets.all(10.0),
+            width: 385,
+            height: 65,
             child: TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
                 labelText: 'Password',
               ),
               obscureText: true,
@@ -95,7 +120,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 borderRadius: BorderRadius.circular(
                     8.0), // Set border radius to create a long square shape
               ),
-              minimumSize: const Size(400,
+              minimumSize: const Size(365,
                   45), // Set the minimum size to match the width of the text fields
             ),
             child: const Text(
@@ -105,8 +130,20 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
+          Container(
+            padding: const EdgeInsets.all(30),
+            child: Text(
+              'By registering, you agree to our Terms of Service and Privacy Policy.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: const Color.fromARGB(255, 0, 0, 0),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 }
+
