@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
 import 'package:testnote/login.dart';
@@ -48,6 +49,69 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: GestureDetector(
+          key: const Key('notes_list_button'),
+          onTap: () async {
+            await selectNotesFromList(context);
+          },
+          child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Icon(
+                Icons.folder_copy_outlined,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
+        actions: [
+          // IconButton(
+          //   icon: const Icon(
+          //     Icons.share_rounded,
+          //     color: Colors.black,
+          //   ),
+          //   onPressed: () {
+          //     // Handle Share button
+          //   },
+          // ),
+          IconButton(
+            key: const Key('save_note_button'),
+            icon: const Icon(Icons.save_rounded, color: Colors.black),
+            onPressed: () {
+              // Handle save button press
+              _addNote();
+            },
+          ),
+          IconButton(
+            key: const Key('log_button'),
+            icon: Icon(_auth.currentUser == null ? Icons.login : Icons.logout),
+            onPressed: () async {
+              if (_auth.currentUser == null) {
+                // Navigate to the login page
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginPage(),
+                  ),
+                );
+              } else {
+                if (GoogleSignIn().currentUser != null) {
+                  await GoogleSignIn().disconnect();
+                }
+                await _auth.signOut();
+              }
+            },
+          ),
+          if (_auth.currentUser != null) // Check if the username is not empty
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                getUsername(),
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+        ],
         title: GestureDetector(
           onTap: () {
             // Open the link when the title is clicked
@@ -64,67 +128,108 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           },
           child: const MouseRegion(
             cursor: SystemMouseCursors.click,
-            child: Text('Notease - v0.3 | 16 Maret 2024'),
-          ),
-        ),
-        backgroundColor: const Color.fromARGB(255, 227, 179, 235),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.folder_open),
-            onPressed: () async {
-              await selectNotesFromList(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(_auth.currentUser == null ? Icons.login : Icons.logout),
-            onPressed: () async {
-              if (_auth.currentUser == null) {
-                // Navigate to the login page
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const LoginPage(),
-                  ),
-                );
-              } else {
-                await _auth.signOut();
-              }
-            },
-          ),
-          if (_auth.currentUser != null) // Check if the username is not empty
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
-                getUsername(),
-                style: const TextStyle(fontSize: 16),
+            child: Text(
+              "Notease - v0.4.1 | 26 Maret 2024",
+              style: TextStyle(
+                color: Color.fromARGB(255, 30, 29, 29),
+                fontWeight: FontWeight.bold,
               ),
             ),
-        ],
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [
           Expanded(
-            child: TextField(
-              controller: _noteController,
-              maxLines: null,
-              expands: true,
-              decoration: const InputDecoration(
-                hintText: 'Enter your note',
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 25.0), // Menambahkan padding horizontal
+              child: TextField(
+                key: const Key('note_text_field'),
+                controller: _noteController,
+                maxLines: null,
+                expands: true,
+                textAlignVertical:
+                    TextAlignVertical.top, // Mengatur teks ke atas
+                textAlign: TextAlign.start, // Mengatur teks ke kiri
+                decoration: const InputDecoration(
+                  hintText: 'Enter your note',
+                  contentPadding: EdgeInsets.symmetric(
+                      vertical: 30.0), // Menambahkan padding vertikal
+                ),
+                onSubmitted: (note) {
+                  _addNote();
+                },
               ),
-              onSubmitted: (note) {
-                _addNote();
-              },
             ),
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _addNote();
-        },
-        child: Icon(editingIndex == -1 ? Icons.add : Icons.save),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      // bottomNavigationBar: BottomAppBar(
+      //   elevation: 0, // Menghapus efek bayangan
+      //   shape: const CircularNotchedRectangle(),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //     children: [
+      //       IconButton(
+      //         icon: const Icon(Icons.highlight, size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.format_italic_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.format_bold_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.format_underline_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle highlight text button press
+      //         },
+      //         tooltip: "Highlight",
+      //       ),
+      //       IconButton(
+      //         icon:
+      //             const Icon(Icons.undo_rounded, size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle undo button press
+      //         },
+      //         tooltip: "Undo",
+      //       ),
+      //       IconButton(
+      //         icon:
+      //             const Icon(Icons.redo_rounded, size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle redo button press
+      //         },
+      //         tooltip: "Redo",
+      //       ),
+      //       IconButton(
+      //         icon: const Icon(Icons.attach_file_rounded,
+      //             size: 30, color: Colors.black),
+      //         onPressed: () {
+      //           // Handle add attachment button press
+      //         },
+      //         tooltip: "Attach-file",
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 
