@@ -50,6 +50,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
+          key: const Key('notes_list_button'),
           onTap: () async {
             await selectNotesFromList(context);
           },
@@ -75,6 +76,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           //   },
           // ),
           IconButton(
+            key: const Key('save_note_button'),
             icon: const Icon(Icons.save_rounded, color: Colors.black),
             onPressed: () {
               // Handle save button press
@@ -82,6 +84,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
             },
           ),
           IconButton(
+            key: const Key('log_button'),
             icon: Icon(_auth.currentUser == null ? Icons.login : Icons.logout),
             onPressed: () async {
               if (_auth.currentUser == null) {
@@ -143,6 +146,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
               padding: const EdgeInsets.symmetric(
                   horizontal: 25.0), // Menambahkan padding horizontal
               child: TextField(
+                key: const Key('note_text_field'),
                 controller: _noteController,
                 maxLines: null,
                 expands: true,
