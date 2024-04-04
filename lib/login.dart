@@ -2,11 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:app_links/app_links.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:testnote/home.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -142,11 +140,9 @@ class _LoginPageState extends State<LoginPage> {
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
-      
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
-        
         children: [
           const Center(
             child: Text(
@@ -159,13 +155,13 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const Text(
-              'Welcome back to Note-Ease!',
-              style: TextStyle(
-                fontSize: 16,
-                color: Color.fromARGB(255, 0, 0, 0),
-                // fontWeight: FontWeight.bold
-              ),
+            'Welcome back to Note-Ease!',
+            style: TextStyle(
+              fontSize: 16,
+              color: Color.fromARGB(255, 0, 0, 0),
+              // fontWeight: FontWeight.bold
             ),
+          ),
           const SizedBox(height: 50),
           Container(
             padding: const EdgeInsets.all(10.0),
@@ -175,7 +171,9 @@ class _LoginPageState extends State<LoginPage> {
               key: const Key('email_field'),
               controller: _emailController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))), // Add border to create a box
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(10))), // Add border to create a box
                 labelText: 'email@email.com',
               ),
             ),
@@ -189,7 +187,9 @@ class _LoginPageState extends State<LoginPage> {
               controller: _passwordController,
               decoration: const InputDecoration(
                 labelText: 'Password',
-                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))), // Add border to create a box
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(10))), // Add border to create a box
               ),
               obscureText: true,
             ),
@@ -241,28 +241,29 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   }
                 }
-              } on Exception catch (e) {
+              } on Exception {
                 if (mounted) {
                   // show a popup saying incorrect username or password/something went wrong
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Login Failed'),
-                        content: const Text(
-                            'Incorrect username or password/something went wrong. Please try again.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                  setState(() {});
+                  setState(() {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Login Failed'),
+                          content: const Text(
+                              'Incorrect username or password/something went wrong. Please try again.'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  });
                 }
               }
             },
@@ -330,7 +331,8 @@ class _LoginPageState extends State<LoginPage> {
               },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                backgroundColor: Color.fromARGB(255, 239, 239, 239), // Change button color to black
+                backgroundColor: const Color.fromARGB(
+                    255, 239, 239, 239), // Change button color to black
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(
                       8.0), // Set border radius to create a long square shape
@@ -347,7 +349,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: ElevatedButton(
@@ -358,10 +359,11 @@ class _LoginPageState extends State<LoginPage> {
                     builder: (context) => const RegisterPage(),
                   ),
                 );
-              },    
+              },
               style: ElevatedButton.styleFrom(
                 elevation: 0,
-                backgroundColor: Color.fromARGB(255, 255, 255, 255), // Change button color to black
+                backgroundColor: const Color.fromARGB(
+                    255, 255, 255, 255), // Change button color to black
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(
                       8.0), // Set border radius to create a long square shape
@@ -373,7 +375,7 @@ class _LoginPageState extends State<LoginPage> {
                 'Ready to simplify your note? Click here to join Now!',
                 style: TextStyle(
                   color: Color.fromARGB(255, 136, 135, 135),
-                    fontSize: 13.0, // Change text color to white
+                  fontSize: 13.0, // Change text color to white
                 ),
               ),
             ),

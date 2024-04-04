@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testnote/list.dart';
@@ -20,7 +22,10 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   Map<int, String> notes = {};
   int editingIndex = -1;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  final TextEditingController _noteController = TextEditingController();
+  final _noteController = QuillController(
+      keepStyleOnNewLine: false,
+      document: Document(),
+      selection: const TextSelection.collapsed(offset: 0));
   final FirebaseFirestore db = FirebaseFirestore.instance;
   dynamic userData;
   dynamic notesDocRef;
@@ -61,6 +66,31 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
               child: Icon(
                 Icons.folder_copy_outlined,
                 color: Colors.black,
+              ),
+            ),
+          ),
+        ),
+        title: GestureDetector(
+          onTap: () {
+            // Open the link when the title is clicked
+            launchUrl(Uri(
+              scheme: 'https',
+              host: 'binusianorg-my.sharepoint.com',
+              path:
+                  '/personal/bill_elim_binus_ac_id/_layouts/15/guestaccess.aspx',
+              queryParameters: {
+                'share': 'EkEQg25whCZKtZOdahpRq5kBQybA6nFJ-an02U60GhuOdg',
+                'e': 'pW9qBv',
+              },
+            ));
+          },
+          child: const MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: Text(
+              "Notease - v0.4.1 | 26 Maret 2024",
+              style: TextStyle(
+                color: Color.fromARGB(255, 30, 29, 29),
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
@@ -112,124 +142,37 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
               ),
             ),
         ],
-        title: GestureDetector(
-          onTap: () {
-            // Open the link when the title is clicked
-            launchUrl(Uri(
-              scheme: 'https',
-              host: 'binusianorg-my.sharepoint.com',
-              path:
-                  '/personal/bill_elim_binus_ac_id/_layouts/15/guestaccess.aspx',
-              queryParameters: {
-                'share': 'EkEQg25whCZKtZOdahpRq5kBQybA6nFJ-an02U60GhuOdg',
-                'e': 'pW9qBv',
-              },
-            ));
-          },
-          child: const MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: Text(
-              "Notease - v0.4.1 | 26 Maret 2024",
-              style: TextStyle(
-                color: Color.fromARGB(255, 30, 29, 29),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Column(
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 25.0), // Menambahkan padding horizontal
-              child: TextField(
-                key: const Key('note_text_field'),
-                controller: _noteController,
-                maxLines: null,
-                expands: true,
-                textAlignVertical:
-                    TextAlignVertical.top, // Mengatur teks ke atas
-                textAlign: TextAlign.start, // Mengatur teks ke kiri
-                decoration: const InputDecoration(
-                  hintText: 'Enter your note',
-                  contentPadding: EdgeInsets.symmetric(
-                      vertical: 30.0), // Menambahkan padding vertikal
+              padding: const EdgeInsets.symmetric(horizontal: 25.0),
+              child: QuillEditor.basic(
+                configurations: QuillEditorConfigurations(
+                  controller: _noteController,
+                  readOnly: false,
+                  sharedConfigurations: const QuillSharedConfigurations(
+                    locale: Locale('en'),
+                  ),
                 ),
-                onSubmitted: (note) {
-                  _addNote();
-                },
+              ),
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: QuillToolbar.simple(
+              configurations: QuillSimpleToolbarConfigurations(
+                controller: _noteController,
+                sharedConfigurations: const QuillSharedConfigurations(
+                  locale: Locale('en'),
+                ),
               ),
             ),
           ),
         ],
       ),
-      // bottomNavigationBar: BottomAppBar(
-      //   elevation: 0, // Menghapus efek bayangan
-      //   shape: const CircularNotchedRectangle(),
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //     children: [
-      //       IconButton(
-      //         icon: const Icon(Icons.highlight, size: 30, color: Colors.black),
-      //         onPressed: () {
-      //           // Handle highlight text button press
-      //         },
-      //         tooltip: "Highlight",
-      //       ),
-      //       IconButton(
-      //         icon: const Icon(Icons.format_italic_rounded,
-      //             size: 30, color: Colors.black),
-      //         onPressed: () {
-      //           // Handle highlight text button press
-      //         },
-      //         tooltip: "Highlight",
-      //       ),
-      //       IconButton(
-      //         icon: const Icon(Icons.format_bold_rounded,
-      //             size: 30, color: Colors.black),
-      //         onPressed: () {
-      //           // Handle highlight text button press
-      //         },
-      //         tooltip: "Highlight",
-      //       ),
-      //       IconButton(
-      //         icon: const Icon(Icons.format_underline_rounded,
-      //             size: 30, color: Colors.black),
-      //         onPressed: () {
-      //           // Handle highlight text button press
-      //         },
-      //         tooltip: "Highlight",
-      //       ),
-      //       IconButton(
-      //         icon:
-      //             const Icon(Icons.undo_rounded, size: 30, color: Colors.black),
-      //         onPressed: () {
-      //           // Handle undo button press
-      //         },
-      //         tooltip: "Undo",
-      //       ),
-      //       IconButton(
-      //         icon:
-      //             const Icon(Icons.redo_rounded, size: 30, color: Colors.black),
-      //         onPressed: () {
-      //           // Handle redo button press
-      //         },
-      //         tooltip: "Redo",
-      //       ),
-      //       IconButton(
-      //         icon: const Icon(Icons.attach_file_rounded,
-      //             size: 30, color: Colors.black),
-      //         onPressed: () {
-      //           // Handle add attachment button press
-      //         },
-      //         tooltip: "Attach-file",
-      //       ),
-      //     ],
-      //   ),
-      // ),
     );
   }
 
@@ -244,7 +187,8 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
         ) ??
         oldEditingIndex;
     if (editingIndex != -1) {
-      _noteController.text = notes[editingIndex]!;
+      _noteController.document =
+          Document.fromJson(jsonDecode(notes[editingIndex]!));
     } else if (oldEditingIndex != editingIndex) {
       _noteController.clear();
     }
@@ -272,10 +216,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
               'username': currentUser.email,
             });
             notesDocRef.set({
-              'notes': {
-                '0':
-                    'Omg Bill ganteng banget dan tidak narsis (test note pertama jangan lupa dihapus pas production)'
-              },
+              'notes': {'0': r'[{"insert":"Hello, World!\n"}]'},
             });
             userData = {
               'username': currentUser.email,
@@ -302,7 +243,8 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
     if (editingIndex == -1) {
       editingIndex = notes.isEmpty ? 0 : notes.keys.reduce(max) + 1;
     }
-    notes[editingIndex] = _noteController.text;
+    notes[editingIndex] =
+        jsonEncode(_noteController.document.toDelta().toJson());
 
     if (_auth.currentUser == null) {
       final prefs = await SharedPreferences.getInstance();
@@ -311,7 +253,8 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
       await prefs.setStringList('notes', notes.values.toList());
     } else {
       notesDocRef.update({
-        'notes.$editingIndex': _noteController.text,
+        'notes.$editingIndex':
+            jsonEncode(_noteController.document.toDelta().toJson()),
       }).then(
         (value) {},
         onError: (e) => print("Error saving note: $e"),
