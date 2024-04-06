@@ -92,9 +92,6 @@ class _LoginPageState extends State<LoginPage> {
     _auth.authStateChanges().listen((User? user) async {
       if (user != null) {
         if (user.emailVerified) {
-          // Allow the user to log in
-          // Navigator.pop(context); // Close the login page
-          // Navigate to the user account screen
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const NotepadHomePage()),

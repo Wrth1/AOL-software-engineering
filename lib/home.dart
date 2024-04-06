@@ -168,6 +168,9 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                 sharedConfigurations: const QuillSharedConfigurations(
                   locale: Locale('en'),
                 ),
+                showSubscript: false,
+                showSuperscript: false,
+                showFontFamily: false,
               ),
             ),
           ),
