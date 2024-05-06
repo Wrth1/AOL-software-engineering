@@ -127,8 +127,10 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                   ),
                 );
               } else {
-                if (GoogleSignIn().currentUser != null) {
+                try {
                   await GoogleSignIn().disconnect();
+                } on Exception catch (e) {
+                  // TODO
                 }
                 await _auth.signOut();
               }
