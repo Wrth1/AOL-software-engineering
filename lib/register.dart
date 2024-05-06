@@ -43,21 +43,19 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40.0),
-            child: Container(
-              child: Text(
-                'Simplify Your Notes and Amplify Your Works, with Note-Ease!',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Color.fromARGB(255, 0, 0, 0),
-                  // fontWeight: FontWeight.bold
-                ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 40.0),
+            child: Text(
+              'Simplify Your Notes and Amplify Your Works, with Note-Ease!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: Color.fromARGB(255, 0, 0, 0),
+                // fontWeight: FontWeight.bold
               ),
             ),
           ),
-          SizedBox(height: 50),
+          const SizedBox(height: 50),
           Container(
             padding: const EdgeInsets.all(10.0),
             width: 385,
@@ -65,7 +63,8 @@ class _RegisterPageState extends State<RegisterPage> {
             child: TextField(
               controller: _emailController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
                 labelText: 'email@email.com',
               ),
             ),
@@ -77,7 +76,8 @@ class _RegisterPageState extends State<RegisterPage> {
             child: TextField(
               controller: _passwordController,
               decoration: const InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10))),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
                 labelText: 'Password',
               ),
               obscureText: true,
@@ -94,7 +94,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 if (newUserCredential.user != null) {
                   await newUserCredential.user!.sendEmailVerification();
                 }
-              } on FirebaseAuthException catch (e) {
+              } on FirebaseAuthException {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -132,12 +132,12 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           Container(
             padding: const EdgeInsets.all(30),
-            child: Text(
+            child: const Text(
               'By registering, you agree to our Terms of Service and Privacy Policy.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15,
-                color: const Color.fromARGB(255, 0, 0, 0),
+                color: Color.fromARGB(255, 0, 0, 0),
               ),
             ),
           ),
@@ -146,4 +146,3 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
-
