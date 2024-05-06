@@ -23,6 +23,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
   int editingIndex = -1;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _noteController = QuillController(
+      readOnly: false,
       keepStyleOnNewLine: false,
       document: Document(),
       selection: const TextSelection.collapsed(offset: 0));
@@ -152,7 +153,6 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
               child: QuillEditor.basic(
                 configurations: QuillEditorConfigurations(
                   controller: _noteController,
-                  readOnly: false,
                   sharedConfigurations: const QuillSharedConfigurations(
                     locale: Locale('en'),
                   ),
