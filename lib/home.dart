@@ -84,7 +84,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                 'e': 'pW9qBv',
               },
             ));
-          },
+          }
           child: const MouseRegion(
             cursor: SystemMouseCursors.click,
             child: Text(
