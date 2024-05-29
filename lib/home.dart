@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -88,7 +89,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
           child: const MouseRegion(
             cursor: SystemMouseCursors.click,
             child: Text(
-              "Notease - v0.5.0 | 4 April 2024",
+              "Notease - v0.5.1 | 4 April 2024",
               style: TextStyle(
                 color: Color.fromARGB(255, 30, 29, 29),
                 fontWeight: FontWeight.bold,
@@ -127,12 +128,21 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                   ),
                 );
               } else {
-                try {
-                  await GoogleSignIn().disconnect();
-                } on Exception catch (e) {
-                  // TODO
+                if (defaultTargetPlatform == TargetPlatform.iOS ||
+                    defaultTargetPlatform == TargetPlatform.android) {
+                  try {
+                    await GoogleSignIn().disconnect();
+                  } on Exception catch (e) {
+                    print("---------- ERROR -------------------------------------");
+                    print(e);
+                  }
                 }
-                await _auth.signOut();
+                try {
+                  await _auth.signOut();
+                } on Exception catch (e) {
+                  print("---------- ERROR -------------------------------------");
+                  print(e);
+                }
               }
             },
           ),
