@@ -94,6 +94,7 @@ class _NotepadHomePageState extends State<NotepadHomePage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
           ),
         ),
         actions: [
